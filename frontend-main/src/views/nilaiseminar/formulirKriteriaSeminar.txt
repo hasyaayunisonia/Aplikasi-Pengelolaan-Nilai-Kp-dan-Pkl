@@ -1,0 +1,282 @@
+import React, { useState, useEffect } from 'react'
+import 'antd/dist/reset.css'
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+  CTable,
+  CTableHead,
+  CTableDataCell,
+  CFormCheck,
+} from '@coreui/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrashCan, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { Button, Col, Row, Table, Modal, Input, Form, Spin } from 'antd'
+import { useHistory } from 'react-router-dom'
+import axios from 'axios'
+import { LoadingOutlined } from '@ant-design/icons'
+
+const antIcon = <LoadingOutlined style={{ fontSize: 40 }} spin />
+const FormulirKriteriaSeminar = () => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [isModalcreateVisible, setIsModalCreateVisible] = useState(false)
+  const [isModalEditVisible, setIsModalEditVisible] = useState(false)
+  const [form] = Form.useForm()
+  const [form1] = Form.useForm()
+  const [form2] = Form.useForm()
+  useEffect(() => {
+    setTimeout(function () {
+      setIsLoading(false)
+    }, 100)
+  }, [])
+
+  const kriteria = [
+    { id: 1, name: 'Mengenali Perusahaan', selected: false },
+    { id: 2, name: 'Budaya Perusahaan', selected: true },
+    { id: 3, name: 'Suasana Kerja', selected: false },
+  ]
+
+  const showModalDelete = () => {
+    Modal.confirm({
+      title: 'Konfirmasi hapus kriteria perusahaan',
+      zIndex: 9999999,
+      okText: 'Ya',
+      // onOk: () => {
+      //   handleOkDelete(record, index)
+      // }
+    })
+  }
+  const showModalCreate = () => {
+    setIsModalCreateVisible(true)
+  }
+
+  const handleCancelCreate = () => {
+    setIsModalCreateVisible(false)
+  }
+
+  const showModalEdit = () => {
+    setIsModalEditVisible(true)
+  }
+
+  const handleCancelEdit = () => {
+    setIsModalEditVisible(false)
+  }
+
+  var x = 1
+  return isLoading ? (
+    <Spin indicator={antIcon} />
+  ) : (
+    <>
+      <CCard className="mb-4">
+        <CCardHeader style={{ paddingLeft: '20px' }}>
+          <h5>
+            <b>Tentukan Kriteria-Kriteria Seminar</b>
+          </h5>
+        </CCardHeader>
+        <CCardBody>
+          <CRow>
+            <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="px-4"
+                id="generate"
+                style={{ backgroundColor: '#339900', borderColor: '#339900' }}
+                onClick={() => {
+                  showModalCreate()
+                }}
+              >
+                Tambah Kriteria
+              </Button>
+            </CCol>
+          </CRow>
+          <Form
+            form={form}
+            name="basic"
+            wrapperCol={{ span: 24 }}
+            // onFinish={() => onFinish(0)}
+            // onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
+            <table className="table table-bordered">
+              <tr>
+                <th>No</th>
+                <th>List Kriteria Seminar</th>
+                <th style={{ width: '15%', textAlign: 'center' }}>Pilih Kriteria</th>
+                <th style={{ width: '10%', textAlign: 'center' }}>Tentukan Bobot</th>
+                <th style={{ width: '10%', textAlign: 'center' }}>Aksi</th>
+              </tr>
+              {kriteria.map((val, key) => {
+                return (
+                  <tr key={key}>
+                    <td> {x++}</td>
+                    <td>{val.name}</td>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      <CFormCheck id="checkboxNoLabel" value="" aria-label="..." />
+                    </td>
+                    <td>
+                      <Input
+                        addonAfter="%"
+                        // onChange={e => {
+                        //     setBobot(pre => {
+                        //         return { ...pre, bobotMinat: e.target.value }
+                        //     })
+                        // }} value={bobot.bobotMinat}
+                      />
+                    </td>
+                    <td>
+                      <Row>
+                        <Col span={12} style={{ textAlign: 'center' }}>
+                          <Button
+                            id="button-pencil"
+                            htmlType="submit"
+                            shape="circle"
+                            style={{ backgroundColor: '#FCEE21', borderColor: '#FCEE21' }}
+                            onClick={() => {
+                              showModalEdit()
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faPencil} style={{ color: 'black' }} />
+                          </Button>
+                        </Col>
+                        <Col span={12} style={{ textAlign: 'center' }}>
+                          <Button
+                            id="button-trash"
+                            htmlType="submit"
+                            shape="circle"
+                            // loading={loadings[`delete-${record.id}`]}
+                            style={{ backgroundColor: '#e9033d', borderColor: '#e9033d' }}
+                            onClick={() => {
+                              showModalDelete()
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrashCan} style={{ color: 'black' }} />
+                          </Button>
+                        </Col>
+                      </Row>
+                    </td>
+                  </tr>
+                )
+              })}
+            </table>
+          </Form>
+          <CRow>
+            <CCol sm={12} style={{ textAlign: 'right' }}>
+              <Button
+                id="button-submit"
+                size="sm"
+                shape="square"
+                // loading={loadings[0]}
+                style={{ color: 'white', background: '#3399FF', marginBottom: 16 }}
+                onClick={form.submit}
+              >
+                Simpan
+              </Button>
+            </CCol>
+          </CRow>
+        </CCardBody>
+      </CCard>
+
+      <Modal
+        title="Tambah Kriteria"
+        visible={isModalcreateVisible}
+        onOk={form1.submit}
+        onCancel={handleCancelCreate}
+        width={600}
+        zIndex={9999999}
+        footer={[
+          <Button key="back" onClick={handleCancelCreate}>
+            Batal
+          </Button>,
+          <Button
+            // loading={loadings[1]}
+            key="submit"
+            type="primary"
+            onClick={form1.submit}
+          >
+            Simpan
+          </Button>,
+        ]}
+      >
+        <Form
+          form={form1}
+          name="basic"
+          wrapperCol={{ span: 24 }}
+          // onFinish={() => handleOkCreate(1)}
+          autoComplete="off"
+        >
+          <b>
+            Masukkan Kriteria Seminar<span style={{ color: 'red' }}> *</span>
+          </b>
+          <Form.Item
+            name="namaKriteria"
+            rules={[{ required: true, message: 'Kriteria tidak boleh kosong!' }]}
+          >
+            <Input
+            // onChange={e => setNamaAspek(e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Ubah Kriteria"
+        // visible={getEditModal(item.name)}
+        visible={isModalEditVisible}
+        onOk={form2.submit}
+        // onCancel={() => handleCancelEdit(item.name)}
+        onCancel={handleCancelEdit}
+        width={600}
+        zIndex={9999999}
+        footer={[
+          // <Button key="back" onClick={() => handleCancelEdit(item.name)}>
+          <Button key="back" onClick={() => handleCancelEdit()}>
+            Batal
+          </Button>,
+          <Button
+            // loading={loadings[tipeKompetensi.length + i]}
+            key="submit"
+            type="primary"
+            onClick={form2.submit}
+          >
+            Simpan
+          </Button>,
+        ]}
+      >
+        <Form
+          form={form2}
+          name="basic"
+          wrapperCol={{ span: 24 }}
+          // onFinish={() => handleOkEdit(item.name, tipeKompetensi.length + i)}
+          autoComplete="off"
+          // fields={[
+          //     {
+          //         name: [`nameEdit`],
+          //         value: choose.name
+          //     }
+          // ]}
+        >
+          <b>
+            Masukkan Perubahan Kriteria
+            {/* <span style={{ color: "red" }}> *</span> */}
+          </b>
+          <Form.Item
+          // name={`nameEdit`}
+          // rules={[{ required: true, message: `Nama ${item.name.toLowerCase()} tidak boleh kosong!` }]}
+          >
+            <Input
+            // onChange={e => {
+            //     setChoose(pre => {
+            //         return { ...pre, name: e.target.value };
+            //     });
+            // }} value={choose.name}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  )
+}
+export default FormulirKriteriaSeminar
