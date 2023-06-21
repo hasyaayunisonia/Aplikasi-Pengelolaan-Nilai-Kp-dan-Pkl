@@ -61,7 +61,7 @@ const PembobotanMataKuliah = () => {
   axios.defaults.withCredentials = true
 
   const refreshData = (index) => {
-    axios.get(`/api/courses/component/course-form/${id}`).then((res) => {
+    axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`).then((res) => {
       setBobot({
         UasPraktek: res.data.data[0].bobot_component,
         UasTeori: res.data.data[1].bobot_component,
@@ -83,7 +83,7 @@ const PembobotanMataKuliah = () => {
       setIsLoading(false)
       setIsSpinner(false)
       await axios
-        .get(`/api/courses/component/course-form/${id}`)
+        .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`)
         .then((res) => {
           setBobot({
             UasPraktek: res.data.data[0].bobot_component,
@@ -139,7 +139,7 @@ const PembobotanMataKuliah = () => {
     if (countBobot() === 100) {
       enterLoading(index)
       await axios
-        .put(`/api/courses/component/update`, [
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/update`, [
           {
             id: 7,
             name: 'EAS Praktek',
@@ -239,9 +239,6 @@ const PembobotanMataKuliah = () => {
                 <h5>
                   <b style={{ color: '#374253' }}>Pengelolaan Bobot Komponen &nbsp;</b>
                 </h5>
-              </Col>
-              <Col>
-                <span style={{ color: 'red' }}>* Jumlah semua bobot harus 100</span>
               </Col>
             </Row>
           </CCardHeader>
@@ -466,7 +463,7 @@ const PembobotanMataKuliah = () => {
       <CCard>
         <CCardBody>
           {steps[current].content}
-          <div className="steps-action">
+          <div className="steps-action mt-2">
             {current > 0 && (
               <>
                 <Button
@@ -506,7 +503,7 @@ const PembobotanMataKuliah = () => {
                     style={{
                       color: 'white',
                       background: countBobot() === 100 ? '#1677ff' : '#FF0000',
-                      margin: '0 8px',
+                      margin: '15px 15px 15px 30px',
                     }}
                     disabled={countBobot() !== 100}
                     onClick={form.submit}

@@ -96,6 +96,7 @@ const ListMataKuliah = lazyWithRetry(() => import('./views/matakuliah/listMataKu
 const CreateMataKuliah = lazyWithRetry(() => import('./views/matakuliah/createMataKuliah'))
 const DetailMataKuliah = lazyWithRetry(() => import('./views/matakuliah/detailMataKuliah'))
 const UpdateMataKuliah = lazyWithRetry(() => import('./views/matakuliah/updateMataKuliah'))
+const PembobotanNilaiMataKuliah = lazyWithRetry(() => import('./views/matakuliah/pembobotanNilaiMataKuliah'))
 const RekapitulasiMataKuliah = lazyWithRetry(() =>
   import('./views/matakuliah/rekapitulasiMataKuliah'),
 )
@@ -107,39 +108,35 @@ const routes = [
   { path: '/profile', name: 'Profile', component: Profile },
 
   // *************** Mata Kuliah ***************
-  { path: '/matakuliah', name: 'Mata Kuliah', component: ListMataKuliah, exact: true },
+  { path: '/mataKuliah', name: 'Mata Kuliah', component: ListMataKuliah, exact: true },
   {
-    path: '/matakuliah/listmatakuliah',
+    path: '/mataKuliah/listMatakuliah',
     name: 'List Mata Kuliah',
     component: ListMataKuliah,
+    exact: true
   },
   {
-    path: '/matakuliah/listmatakuliah/tambahmatakuliah',
+    path: '/mataKuliah/listMatakuliah/tambahMatakuliah',
     name: 'Tambah Mata Kuliah',
-    component: CreateMataKuliah,
+    component: CreateMataKuliah
   },
   {
-    path: '/matakuliah/listmatakuliah/detailmatakuliah',
-    name: 'Detail Mata Kuliah',
-    component: DetailMataKuliah,
-  },
-  {
-    path: '/matakuliah/listmatakuliah/detailmatakuliah/:id',
+    path: '/mataKuliah/listMatakuliah/detailMatakuliah/:id',
     name: ':id',
-    component: DetailMataKuliah,
+    component: DetailMataKuliah
   },
   {
-    path: '/matakuliah/listmatakuliah/ubahmatakuliah',
+    path: '/mataKuliah/listMatakuliah/ubahMatakuliah',
     name: 'Ubah Mata Kuliah',
     component: UpdateMataKuliah,
   },
   {
-    path: '/matakuliah/listmatakuliah/ubahmatakuliah/:id',
+    path: '/mataKuliah/listMatakuliah/ubahMatakuliah/:id',
     name: ':id',
     component: UpdateMataKuliah,
   },
   {
-    path: '/matakuliah/rekapitulasinilai',
+    path: '/mataKuliah/rekapitulasiNilai',
     name: 'Rekapitulasi Nilai',
     component: RekapitulasiMataKuliah,
     exact: true,
