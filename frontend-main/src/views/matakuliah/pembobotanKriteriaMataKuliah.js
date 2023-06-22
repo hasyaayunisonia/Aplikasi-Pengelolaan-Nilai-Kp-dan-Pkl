@@ -122,11 +122,15 @@ const PembobotanKriteriaMataKuliah = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const mataKuliahResponse = await axios.get(`/api/courses/form`)
-        const formPenilaianResponse = await axios.get(
-          `/api/courses/criteria/evaluation-form/${mataKuliahResponse.data.data[0].prodi_id}`,
+        const mataKuliahResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`,
         )
-        const dataKriteriaResponse = await axios.get(`api/courses/component/criteria/form/${id}`)
+        const formPenilaianResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/${mataKuliahResponse.data.data[0].prodi_id}`,
+        )
+        const dataKriteriaResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+        )
 
         setMatkul(mataKuliahResponse.data.data.find((item) => item.id === parseInt(id)))
 
@@ -234,7 +238,12 @@ const PembobotanKriteriaMataKuliah = () => {
         setIsSpinner(false)
       } catch (error) {
         if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-          history.push('/dashboard')
+          history.push({
+            pathname: '/login',
+            state: {
+              session: true,
+            },
+          })
         } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
           history.push('/404')
         } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
@@ -251,102 +260,6 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('ini prodi matkul', matkul.prodi_id)
     console.log('ini form', formPenilaian)
     // console.log('ini data kriteria', dataKriteria)
-
-    //maping data kriteria untuk ets t
-    const cek = dataKriteria.criteria_data
-    console.log('ini cek', cek)
-    if (cek) {
-      const mappedData = cek.map((item) => ({
-        name_form: item.name_form,
-        type_form: item.type_form,
-        aspect_form_id: item.aspect_form_id,
-        aspect_name: item.aspect_name,
-        component_id: item.component_id,
-        bobot_criteria: item.bobot_criteria,
-        id: item.id,
-      }))
-      setFormData(mappedData)
-    }
-
-    //maping data kriteria untuk ets p
-    const cek1 = dataKriteria1.criteria_data
-    console.log('ini cek1', cek1)
-    if (cek1) {
-      const mappedData = cek1.map((item) => ({
-        name_form: item.name_form,
-        type_form: item.type_form,
-        aspect_form_id: item.aspect_form_id,
-        aspect_name: item.aspect_name,
-        component_id: item.component_id,
-        bobot_criteria: item.bobot_criteria,
-        id: item.id,
-      }))
-      setFormData1(mappedData)
-    }
-
-    //maping data kriteria untuk eas t
-    const cek2 = dataKriteria2.criteria_data
-    console.log('ini cek2', cek2)
-    if (cek2) {
-      const mappedData = cek2.map((item) => ({
-        name_form: item.name_form,
-        type_form: item.type_form,
-        aspect_form_id: item.aspect_form_id,
-        aspect_name: item.aspect_name,
-        component_id: item.component_id,
-        bobot_criteria: item.bobot_criteria,
-        id: item.id,
-      }))
-      setFormData2(mappedData)
-    }
-
-    //maping data kriteria untuk eas p
-    const cek3 = dataKriteria3.criteria_data
-    console.log('ini cek3', cek3)
-    if (cek3) {
-      const mappedData = cek3.map((item) => ({
-        name_form: item.name_form,
-        type_form: item.type_form,
-        aspect_form_id: item.aspect_form_id,
-        aspect_name: item.aspect_name,
-        component_id: item.component_id,
-        bobot_criteria: item.bobot_criteria,
-        id: item.id,
-      }))
-      setFormData3(mappedData)
-    }
-
-    //maping data kriteria untuk lain-lain t
-    const cek4 = dataKriteria4.criteria_data
-    console.log('ini cek4', cek4)
-    if (cek4) {
-      const mappedData = cek4.map((item) => ({
-        name_form: item.name_form,
-        type_form: item.type_form,
-        aspect_form_id: item.aspect_form_id,
-        aspect_name: item.aspect_name,
-        component_id: item.component_id,
-        bobot_criteria: item.bobot_criteria,
-        id: item.id,
-      }))
-      setFormData4(mappedData)
-    }
-
-    //maping data kriteria untuk lain-lain p
-    const cek5 = dataKriteria5.criteria_data
-    console.log('ini cek5', cek5)
-    if (cek5) {
-      const mappedData = cek5.map((item) => ({
-        name_form: item.name_form,
-        type_form: item.type_form,
-        aspect_form_id: item.aspect_form_id,
-        aspect_name: item.aspect_name,
-        component_id: item.component_id,
-        bobot_criteria: item.bobot_criteria,
-        id: item.id,
-      }))
-      setFormData5(mappedData)
-    }
   }, [matkul])
 
   useEffect(() => {
@@ -366,10 +279,25 @@ const PembobotanKriteriaMataKuliah = () => {
 
   useEffect(() => {
     console.log('===> INI Data kriteria', dataKriteria)
+    //maping data kriteria untuk ets t
+    const cek = dataKriteria.criteria_data
+    console.log('ini cek', cek)
+    if (cek) {
+      const mappedData = cek.map((item) => ({
+        name_form: item.name_form,
+        type_form: item.type_form,
+        aspect_form_id: item.aspect_form_id,
+        aspect_name: item.aspect_name,
+        component_id: item.component_id,
+        bobot_criteria: item.bobot_criteria,
+        id: item.id,
+      }))
+      setFormData(mappedData)
+    }
   }, [dataKriteria])
 
   useEffect(() => {
-    // console.log('ini FORM DATA', formData)
+    console.log('ini FORM DATA', formData)
   }, [formData])
 
   useEffect(() => {
@@ -394,7 +322,22 @@ const PembobotanKriteriaMataKuliah = () => {
   }, [formData1])
 
   useEffect(() => {
-    console.log('===> INI Data kriteria', dataKriteria1)
+    // console.log('===> INI Data kriteria', dataKriteria1)
+    //maping data kriteria untuk ets p
+    const cek1 = dataKriteria1.criteria_data
+    console.log('ini cek1', cek1)
+    if (cek1) {
+      const mappedData = cek1.map((item) => ({
+        name_form: item.name_form,
+        type_form: item.type_form,
+        aspect_form_id: item.aspect_form_id,
+        aspect_name: item.aspect_name,
+        component_id: item.component_id,
+        bobot_criteria: item.bobot_criteria,
+        id: item.id,
+      }))
+      setFormData1(mappedData)
+    }
   }, [dataKriteria1])
 
   useEffect(() => {
@@ -419,7 +362,22 @@ const PembobotanKriteriaMataKuliah = () => {
   }, [formData2])
 
   useEffect(() => {
-    console.log('===> INI Data kriteria', dataKriteria2)
+    // console.log('===> INI Data kriteria', dataKriteria2)
+    //maping data kriteria untuk eas t
+    const cek2 = dataKriteria2.criteria_data
+    console.log('ini cek2', cek2)
+    if (cek2) {
+      const mappedData = cek2.map((item) => ({
+        name_form: item.name_form,
+        type_form: item.type_form,
+        aspect_form_id: item.aspect_form_id,
+        aspect_name: item.aspect_name,
+        component_id: item.component_id,
+        bobot_criteria: item.bobot_criteria,
+        id: item.id,
+      }))
+      setFormData2(mappedData)
+    }
   }, [dataKriteria2])
 
   useEffect(() => {
@@ -444,7 +402,22 @@ const PembobotanKriteriaMataKuliah = () => {
   }, [formData3])
 
   useEffect(() => {
-    console.log('===> INI Data kriteria', dataKriteria3)
+    // console.log('===> INI Data kriteria', dataKriteria3)
+    //maping data kriteria untuk eas p
+    const cek3 = dataKriteria3.criteria_data
+    console.log('ini cek3', cek3)
+    if (cek3) {
+      const mappedData = cek3.map((item) => ({
+        name_form: item.name_form,
+        type_form: item.type_form,
+        aspect_form_id: item.aspect_form_id,
+        aspect_name: item.aspect_name,
+        component_id: item.component_id,
+        bobot_criteria: item.bobot_criteria,
+        id: item.id,
+      }))
+      setFormData3(mappedData)
+    }
   }, [dataKriteria3])
 
   useEffect(() => {
@@ -469,7 +442,22 @@ const PembobotanKriteriaMataKuliah = () => {
   }, [formData4])
 
   useEffect(() => {
-    console.log('===> INI Data kriteria', dataKriteria4)
+    // console.log('===> INI Data kriteria', dataKriteria4)
+    //maping data kriteria untuk lain-lain t
+    const cek4 = dataKriteria4.criteria_data
+    console.log('ini cek4', cek4)
+    if (cek4) {
+      const mappedData = cek4.map((item) => ({
+        name_form: item.name_form,
+        type_form: item.type_form,
+        aspect_form_id: item.aspect_form_id,
+        aspect_name: item.aspect_name,
+        component_id: item.component_id,
+        bobot_criteria: item.bobot_criteria,
+        id: item.id,
+      }))
+      setFormData4(mappedData)
+    }
   }, [dataKriteria4])
 
   useEffect(() => {
@@ -494,7 +482,22 @@ const PembobotanKriteriaMataKuliah = () => {
   }, [formData5])
 
   useEffect(() => {
-    console.log('===> INI Data kriteria', dataKriteria5)
+    // console.log('===> INI Data kriteria', dataKriteria5)
+    //maping data kriteria untuk lain-lain p
+    const cek5 = dataKriteria5.criteria_data
+    console.log('ini cek5', cek5)
+    if (cek5) {
+      const mappedData = cek5.map((item) => ({
+        name_form: item.name_form,
+        type_form: item.type_form,
+        aspect_form_id: item.aspect_form_id,
+        aspect_name: item.aspect_name,
+        component_id: item.component_id,
+        bobot_criteria: item.bobot_criteria,
+        id: item.id,
+      }))
+      setFormData5(mappedData)
+    }
   }, [dataKriteria5])
 
   useEffect(() => {
@@ -507,42 +510,44 @@ const PembobotanKriteriaMataKuliah = () => {
 
   const findActiveTab = async () => {
     try {
-      await axios.get(`/api/courses/component/course-form/${id}`).then((res) => {
-        const fetchedKomponen = res.data.data
-        let searchData
-        console.log('ini aktif tab', activeTab)
-        if (activeTab === '0') {
-          searchData = fetchedKomponen.find((item) => item.name === 'ETS Teori')
-          setKomponen(searchData)
-          console.log('==> ini komponen ETS Teori', komponen)
-          return komponen
-        } else if (activeTab === '1') {
-          searchData = fetchedKomponen.find((item) => item.name === 'ETS Praktek')
-          setKomponen1(searchData)
-          console.log('==> ini komponen ETS Praktek', komponen1)
-          return komponen1
-        } else if (activeTab === '2') {
-          searchData = fetchedKomponen.find((item) => item.name === 'EAS Teori')
-          setKomponen2(searchData)
-          console.log('==> ini komponen EAS Teori', komponen2)
-          return komponen2
-        } else if (activeTab === '3') {
-          searchData = fetchedKomponen.find((item) => item.name === 'EAS Praktek')
-          setKomponen3(searchData)
-          console.log('==> ini komponen EAS Teori', komponen3)
-          return komponen3
-        } else if (activeTab === '4') {
-          searchData = fetchedKomponen.find((item) => item.name === 'Lain-lain Teori')
-          setKomponen4(searchData)
-          console.log('==> ini komponen Lain-lain Teori', komponen4)
-          return komponen4
-        } else if (activeTab === '5') {
-          searchData = fetchedKomponen.find((item) => item.name === 'Lain-lain Praktek')
-          setKomponen5(searchData)
-          console.log('==> ini komponen Lain-lain Praktek', komponen5)
-          return komponen5
-        }
-      })
+      await axios
+        .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`)
+        .then((res) => {
+          const fetchedKomponen = res.data.data
+          let searchData
+          console.log('ini aktif tab', activeTab)
+          if (activeTab === '0') {
+            searchData = fetchedKomponen.find((item) => item.name === 'ETS Teori')
+            setKomponen(searchData)
+            console.log('==> ini komponen ETS Teori', komponen)
+            return komponen
+          } else if (activeTab === '1') {
+            searchData = fetchedKomponen.find((item) => item.name === 'ETS Praktek')
+            setKomponen1(searchData)
+            // console.log('==> ini komponen ETS Praktek', komponen1)
+            return komponen1
+          } else if (activeTab === '2') {
+            searchData = fetchedKomponen.find((item) => item.name === 'EAS Teori')
+            setKomponen2(searchData)
+            // console.log('==> ini komponen EAS Teori', komponen2)
+            return komponen2
+          } else if (activeTab === '3') {
+            searchData = fetchedKomponen.find((item) => item.name === 'EAS Praktek')
+            setKomponen3(searchData)
+            // console.log('==> ini komponen EAS Teori', komponen3)
+            return komponen3
+          } else if (activeTab === '4') {
+            searchData = fetchedKomponen.find((item) => item.name === 'Lain-lain Teori')
+            setKomponen4(searchData)
+            // console.log('==> ini komponen Lain-lain Teori', komponen4)
+            return komponen4
+          } else if (activeTab === '5') {
+            searchData = fetchedKomponen.find((item) => item.name === 'Lain-lain Praktek')
+            setKomponen5(searchData)
+            // console.log('==> ini komponen Lain-lain Praktek', komponen5)
+            return komponen5
+          }
+        })
 
       //   return komponen
     } catch (error) {
@@ -582,12 +587,15 @@ const PembobotanKriteriaMataKuliah = () => {
       // console.log('ini adalah formtype ', formType)
       // console.log('ini adalah prodiID ', matkul.prodi_id)
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect/type`, {
-          params: {
-            formType: value,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setTahapOptions(res.data.data)
           console.log('ini tahap', tahapOptions)
@@ -621,13 +629,16 @@ const PembobotanKriteriaMataKuliah = () => {
       // console.log('ini adalah formtype ', formType)
       // console.log('ini adalah prodiID ', matkul.prodi_id)
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect`, {
-          params: {
-            formType: value,
-            formName: formName,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect`,
+          {
+            params: {
+              formType: value,
+              formName: formName,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setAspekOptions(res.data.data)
           console.log('ini aspek', aspekOptions)
@@ -716,7 +727,7 @@ const PembobotanKriteriaMataKuliah = () => {
 
     try {
       await axios
-        .put(`/api/courses/component/criteria/update`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
           id: komponen.id,
           name: komponen.name,
           criteria_data: formData,
@@ -767,12 +778,15 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('INI DI TF KE FORM DATA', formData1)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect/type`, {
-          params: {
-            formType: value,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setTahapOptions1(res.data.data)
           console.log('ini tahap ets p', tahapOptions1)
@@ -799,13 +813,16 @@ const PembobotanKriteriaMataKuliah = () => {
     setFormData1(updatedFormData)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect`, {
-          params: {
-            formType: value,
-            formName: formName1,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect`,
+          {
+            params: {
+              formType: value,
+              formName: formName1,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setAspekOptions1(res.data.data)
           console.log('ini aspek ets p', aspekOptions1)
@@ -890,7 +907,7 @@ const PembobotanKriteriaMataKuliah = () => {
 
     try {
       await axios
-        .put(`/api/courses/component/criteria/update`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
           id: komponen1.id,
           name: komponen1.name,
           criteria_data: formData1,
@@ -939,13 +956,16 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('INI DI TF KE FORM DATA', formData2)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect/type`, {
-          params: {
-            formType: value,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
 
-            prodiId: matkul.prodi_id,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setTahapOptions2(res.data.data)
           console.log('ini tahap ets p', tahapOptions2)
@@ -972,13 +992,16 @@ const PembobotanKriteriaMataKuliah = () => {
     setFormData2(updatedFormData)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect`, {
-          params: {
-            formType: value,
-            formName: formName2,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect`,
+          {
+            params: {
+              formType: value,
+              formName: formName2,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setAspekOptions2(res.data.data)
           console.log('ini aspek ets p', aspekOptions2)
@@ -1063,7 +1086,7 @@ const PembobotanKriteriaMataKuliah = () => {
 
     try {
       await axios
-        .put(`/api/courses/component/criteria/update`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
           id: komponen2.id,
           name: komponen2.name,
           criteria_data: formData2,
@@ -1111,12 +1134,15 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('INI DI TF KE FORM DATA', formData3)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect/type`, {
-          params: {
-            formType: value,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setTahapOptions3(res.data.data)
           console.log('ini tahap ets p', tahapOptions3)
@@ -1143,13 +1169,16 @@ const PembobotanKriteriaMataKuliah = () => {
     setFormData3(updatedFormData)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect`, {
-          params: {
-            formType: value,
-            formName: formName3,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect`,
+          {
+            params: {
+              formType: value,
+              formName: formName3,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setAspekOptions3(res.data.data)
           console.log('ini aspek ets p', aspekOptions3)
@@ -1234,7 +1263,7 @@ const PembobotanKriteriaMataKuliah = () => {
 
     try {
       await axios
-        .put(`/api/courses/component/criteria/update`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
           id: komponen3.id,
           name: komponen3.name,
           criteria_data: formData3,
@@ -1284,12 +1313,15 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('INI DI TF KE FORM DATA', formData4)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect/type`, {
-          params: {
-            formType: value,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setTahapOptions4(res.data.data)
           console.log('ini tahap ets p', tahapOptions4)
@@ -1316,13 +1348,16 @@ const PembobotanKriteriaMataKuliah = () => {
     setFormData4(updatedFormData)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect`, {
-          params: {
-            formType: value,
-            formName: formName4,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect`,
+          {
+            params: {
+              formType: value,
+              formName: formName4,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setAspekOptions4(res.data.data)
           console.log('ini aspek ets p', aspekOptions4)
@@ -1407,7 +1442,7 @@ const PembobotanKriteriaMataKuliah = () => {
 
     try {
       await axios
-        .put(`/api/courses/component/criteria/update`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
           id: komponen4.id,
           name: komponen4.name,
           criteria_data: formData4,
@@ -1457,12 +1492,15 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('INI DI TF KE FORM DATA', formData5)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect/type`, {
-          params: {
-            formType: value,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setTahapOptions5(res.data.data)
           console.log('ini tahap ets p', tahapOptions5)
@@ -1489,13 +1527,16 @@ const PembobotanKriteriaMataKuliah = () => {
     setFormData5(updatedFormData)
     try {
       await axios
-        .get(`/api/courses/criteria/evaluation-form/aspect`, {
-          params: {
-            formType: value,
-            formName: formName5,
-            prodiId: matkul.prodi_id,
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect`,
+          {
+            params: {
+              formType: value,
+              formName: formName5,
+              prodiId: matkul.prodi_id,
+            },
           },
-        })
+        )
         .then((res) => {
           setAspekOptions5(res.data.data)
           console.log('ini aspek ets p', aspekOptions5)
@@ -1580,7 +1621,7 @@ const PembobotanKriteriaMataKuliah = () => {
 
     try {
       await axios
-        .put(`/api/courses/component/criteria/update`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
           id: komponen5.id,
           name: komponen5.name,
           criteria_data: formData5,
@@ -1633,8 +1674,9 @@ const PembobotanKriteriaMataKuliah = () => {
                   name="dynamic_form_nest_item"
                   onFinish={onFinish}
                   // style={{
-                  //   maxWidth: 600,
+                  //   width: '100%',
                   // }}
+                  wrapperCol={{ span: 24 }}
                   autoComplete="off"
                   fields={[
                     {
@@ -1658,145 +1700,173 @@ const PembobotanKriteriaMataKuliah = () => {
                   <Form.List name="users">
                     {(fields, { add, remove }) => (
                       <>
-                        {fields.map((field, index) => (
-                          <Space
-                            key={field.key}
-                            style={{
-                              display: 'flex',
-                              marginBottom: 8,
-                            }}
-                            align="baseline"
-                          >
-                            <Form.Item
-                              {...field}
-                              name={[field.name, 'form_type']}
-                              fieldKey={[field.fieldKey, 'form_type']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Evaluasi Form Penilaian tidak boleh kosong!',
-                                },
-                              ]}
-                              // style={{ paddingRight: '35px' }}
-                              validateTrigger={['onChange', 'onBlur']}
-                            >
-                              <b>Evaluasi Form Penilaian</b>
-                              <Select
-                                // style={{ width: '100%' }}
-                                // onChange={handleFormPenilaianChange}
-                                defaultValue={
-                                  formData[index]?.name_form ? formData[index].name_form : undefined
-                                }
-                                onChange={(value) => handleFormPenilaianChange(value, index)}
-                              >
-                                {formPenilaian.map((item, i) => (
-                                  <Select.Option key={item.form_type} value={item.form_type}>
-                                    {item.form_type}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-                            <Form.Item
-                              {...field}
-                              // label="Sight"
-                              name={[field.name, 'tahapOptions']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Tahap tidak boleh kosong',
-                                },
-                              ]}
-                              validateTrigger={['onChange', 'onBlur']}
-                            >
-                              <b>Tahap</b>
-                              <Select
-                                // disabled={!form.getFieldValue('formPenilaian')}
-                                // style={{
-                                //   width: 130,
-                                // }}
-                                // onChange={handleTahapChange}
-                                defaultValue={
-                                  formData[index]?.type_form ? formData[index].type_form : undefined
-                                }
-                                onChange={(value) => handleTahapChange(value, index)}
-                              >
-                                {tahapOptions.map((item, i) => (
-                                  <Select.Option key={item.name} value={item.name}>
-                                    {item.name}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-                            <Form.Item
-                              {...field}
-                              // label="Sight"
-                              name={[field.name, 'aspekOptions']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Aspek tidak boleh kosong',
-                                },
-                              ]}
-                              validateTrigger={['onChange', 'onBlur']}
-                            >
-                              <b>Aspek</b>
-                              <Select
-                                // disabled={tahapOptions === null}
-                                // style={{
-                                //   minWidth: '100%',
-                                // }}
-                                // onChange={handleTahapChange}
-                                defaultValue={
-                                  formData[index]?.aspect_name
-                                    ? formData[index].aspect_name
-                                    : undefined
-                                }
-                                onChange={(value) => handleAspekChange(value, index)}
-                              >
-                                {aspekOptions.map((item, i) => (
-                                  <Select.Option key={item.name} value={item.name}>
-                                    {item.name}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-                            {number === 1 && (
-                              <Form.Item
-                                {...field}
-                                name={[field.name, 'bobot']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: 'Bobot tidak boleh kosong',
-                                  },
-                                ]}
-                                validateTrigger={['onChange', 'onBlur']}
-                              >
-                                <b>Bobot </b>
-                                <InputNumber
-                                  // id={text.id}
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  addonAfter="%"
-                                  // disabled={text.is_selected === 0}
-                                  // value={text.criteria_bobot}
-                                  defaultValue={
-                                    formData[index]?.bobot_criteria
-                                      ? formData[index].bobot_criteria
-                                      : undefined
-                                  }
-                                  onChange={(value) => handleBobotChange(value, index)}
+                        <div>
+                          {fields.map((field, index) => (
+                            // <Space
+                            //   key={field.key}
+                            //   style={{
+                            //     display: 'flex',
+                            //     flexDirection: 'column',
+                            //     marginBottom: 8,
+                            //   }}
+                            //   align="baseline"
+                            // >
+                            <div key={field.key}>
+                              <Row>
+                                <Col span={22}>
+                                  <b>Evaluasi Formulir Penilaian</b>
+                                  <Form.Item
+                                    {...field}
+                                    name={[field.name, 'form_type']}
+                                    fieldKey={[field.fieldKey, 'form_type']}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: 'Evaluasi Form Penilaian tidak boleh kosong!',
+                                      },
+                                    ]}
+                                    validateTrigger={['onChange', 'onBlur']}
+                                    // style={{ width: '100%' }}
+                                    style={{ paddingRight: '35px' }}
+                                  >
+                                    <Select
+                                      // style={{ width: '100%', height: '40px' }}
+                                      style={{ width: '104%' }}
+                                      defaultValue={
+                                        formData[index]?.name_form
+                                          ? formData[index].name_form
+                                          : undefined
+                                      }
+                                      onChange={(value) => handleFormPenilaianChange(value, index)}
+                                    >
+                                      {formPenilaian.map((item, i) => (
+                                        <Select.Option key={item.form_type} value={item.form_type}>
+                                          {item.form_type}
+                                        </Select.Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
+                                </Col>
+                                <Col span={22}>
+                                  <b>Evaluasi Penilaian</b>
+                                  <Form.Item
+                                    {...field}
+                                    name={[field.name, 'tahapOptions']}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: 'Evaluasi penilaian tidak boleh kosong',
+                                      },
+                                    ]}
+                                    validateTrigger={['onChange', 'onBlur']}
+                                    style={{ paddingRight: '35px' }}
+                                  >
+                                    <Select
+                                      style={{ width: '104%', height: '40px' }}
+                                      dropdownRender={(menu) => (
+                                        <div style={{ overflowY: 'auto' }}>{menu}</div>
+                                      )}
+                                      defaultValue={
+                                        formData[index]?.type_form
+                                          ? formData[index].type_form
+                                          : undefined
+                                      }
+                                      onChange={(value) => handleTahapChange(value, index)}
+                                    >
+                                      {tahapOptions.map((item, i) => (
+                                        <Select.Option key={item.name} value={item.name}>
+                                          <div style={{ whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
+                                            {item.name}
+                                          </div>
+                                        </Select.Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
+                                </Col>
+                                <Col span={22}>
+                                  <Form.Item
+                                    {...field}
+                                    // label="Sight"
+                                    name={[field.name, 'aspekOptions']}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: 'Aspek tidak boleh kosong',
+                                      },
+                                    ]}
+                                    validateTrigger={['onChange', 'onBlur']}
+                                    style={{ paddingRight: '35px' }}
+                                  >
+                                    <b>Aspek</b>
+                                    <Select
+                                      style={{ width: '104%', height: '40px' }}
+                                      dropdownRender={(menu) => (
+                                        <div style={{ overflowY: 'auto' }}>{menu}</div>
+                                      )}
+                                      defaultValue={
+                                        formData[index]?.aspect_name
+                                          ? formData[index].aspect_name
+                                          : undefined
+                                      }
+                                      onChange={(value) => handleAspekChange(value, index)}
+                                    >
+                                      {aspekOptions.map((item, i) => (
+                                        <Select.Option key={item.name} value={item.name}>
+                                          <div style={{ whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
+                                            {' '}
+                                            {item.name}
+                                          </div>
+                                        </Select.Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
+                                </Col>
+                                <Col span={22}>
+                                  {number === 1 && (
+                                    <>
+                                      <b>Bobot </b>
+                                      <Form.Item
+                                        {...field}
+                                        name={[field.name, 'bobot']}
+                                        rules={[
+                                          {
+                                            required: true,
+                                            message: 'Bobot tidak boleh kosong',
+                                          },
+                                        ]}
+                                        validateTrigger={['onChange', 'onBlur']}
+                                      >
+                                        <InputNumber
+                                          // id={text.id}
+                                          type="number"
+                                          min="0"
+                                          max="100"
+                                          addonAfter="%"
+                                          // disabled={text.is_selected === 0}
+                                          // value={text.criteria_bobot}
+                                          defaultValue={
+                                            formData[index]?.bobot_criteria
+                                              ? formData[index].bobot_criteria
+                                              : undefined
+                                          }
+                                          onChange={(value) => handleBobotChange(value, index)}
+                                        />
+                                      </Form.Item>
+                                    </>
+                                  )}
+                                </Col>
+                              </Row>
+                              <Col span={22} style={{ textAlign: 'right' }}>
+                                {' '}
+                                <MinusCircleOutlined
+                                  style={{ color: 'red' }}
+                                  // onClick={() => remove(field.name)}
+                                  onClick={() => handleRemoveField(field.name, index, remove)}
                                 />
-                              </Form.Item>
-                            )}
-
-                            <MinusCircleOutlined
-                              // onClick={() => remove(field.name)}
-                              onClick={() => handleRemoveField(field.name, index, remove)}
-                            />
-                          </Space>
-                        ))}
+                              </Col>
+                            </div>
+                          ))}
+                        </div>
                         <Form.Item>
                           <Button
                             type="dashed"
@@ -1894,12 +1964,12 @@ const PembobotanKriteriaMataKuliah = () => {
                               rules={[
                                 {
                                   required: true,
-                                  message: 'Tahap tidak boleh kosong',
+                                  message: 'Evaluasi penilaian tidak boleh kosong',
                                 },
                               ]}
                               validateTrigger={['onChange', 'onBlur']}
                             >
-                              <b>Tahap</b>
+                              <b>Evaluasi Penilaian</b>
                               <Select
                                 // disabled={!form.getFieldValue('formPenilaian')}
                                 // style={{
@@ -2086,12 +2156,12 @@ const PembobotanKriteriaMataKuliah = () => {
                               rules={[
                                 {
                                   required: true,
-                                  message: 'Tahap tidak boleh kosong',
+                                  message: 'Evaluasi penilaian tidak boleh kosong',
                                 },
                               ]}
                               validateTrigger={['onChange', 'onBlur']}
                             >
-                              <b>Tahap</b>
+                              <b>Evaluasi Penilaian</b>
                               <Select
                                 // disabled={!form.getFieldValue('formPenilaian')}
                                 // style={{
@@ -2278,12 +2348,12 @@ const PembobotanKriteriaMataKuliah = () => {
                               rules={[
                                 {
                                   required: true,
-                                  message: 'Tahap tidak boleh kosong',
+                                  message: 'Evaluasi penilaian tidak boleh kosong',
                                 },
                               ]}
                               validateTrigger={['onChange', 'onBlur']}
                             >
-                              <b>Tahap</b>
+                              <b>Evaluasi Penilaian</b>
                               <Select
                                 // disabled={!form.getFieldValue('formPenilaian')}
                                 // style={{
@@ -2470,12 +2540,12 @@ const PembobotanKriteriaMataKuliah = () => {
                               rules={[
                                 {
                                   required: true,
-                                  message: 'Tahap tidak boleh kosong',
+                                  message: 'Evaluasi penilaian tidak boleh kosong',
                                 },
                               ]}
                               validateTrigger={['onChange', 'onBlur']}
                             >
-                              <b>Tahap</b>
+                              <b>Evaluasi Penilaian</b>
                               <Select
                                 // disabled={!form.getFieldValue('formPenilaian')}
                                 // style={{
@@ -2662,12 +2732,12 @@ const PembobotanKriteriaMataKuliah = () => {
                               rules={[
                                 {
                                   required: true,
-                                  message: 'Tahap tidak boleh kosong',
+                                  message: 'Evaluasi penilaian tidak boleh kosong',
                                 },
                               ]}
                               validateTrigger={['onChange', 'onBlur']}
                             >
-                              <b>Tahap</b>
+                              <b>Evaluasi Penilaian</b>
                               <Select
                                 // disabled={!form.getFieldValue('formPenilaian')}
                                 // style={{

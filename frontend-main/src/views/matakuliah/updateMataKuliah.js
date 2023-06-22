@@ -41,7 +41,12 @@ const UpdateMataKuliah = () => {
           })
           .catch(function (error) {
             if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-              history.push('/dashboard')
+              history.push({
+                pathname: '/login',
+                state: {
+                  session: true,
+                },
+              })
             } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
               history.push('/404')
             } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {

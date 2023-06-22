@@ -15,7 +15,7 @@ const DetailMataKuliah = () => {
         <TabPane tab="Detail" key="1">
           <IdentitasMataKuliah />
         </TabPane>
-        <TabPane tab="Pembobotan" key="2">
+        <TabPane tab="Komponen Nilai" key="2">
           <PembobotanMataKuliah />
         </TabPane>
       </Tabs>

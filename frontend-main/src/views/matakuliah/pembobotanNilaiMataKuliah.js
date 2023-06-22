@@ -61,21 +61,29 @@ const PembobotanMataKuliah = () => {
   axios.defaults.withCredentials = true
 
   const refreshData = (index) => {
-    axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`).then((res) => {
-      setBobot({
-        UasPraktek: res.data.data[0].bobot_component,
-        UasTeori: res.data.data[1].bobot_component,
-        UtsPraktek: res.data.data[2].bobot_component,
-        UtsTeori: res.data.data[3].bobot_component,
-        LainPraktek: res.data.data[4].bobot_component,
-        LainTeori: res.data.data[5].bobot_component,
+    axios
+      .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`)
+      .then((res) => {
+        setBobot({
+          UasPraktek: res.data.data[0].bobot_component,
+          UasTeori: res.data.data[1].bobot_component,
+          UtsPraktek: res.data.data[2].bobot_component,
+          UtsTeori: res.data.data[3].bobot_component,
+          LainPraktek: res.data.data[4].bobot_component,
+          LainTeori: res.data.data[5].bobot_component,
+          idUasPraktek: res.data.data[0].id,
+          idUasTeori: res.data.data[1].id,
+          idUtsPraktek: res.data.data[2].id,
+          idUtsTeori: res.data.data[3].id,
+          idLainPraktek: res.data.data[4].id,
+          idLainTeori: res.data.data[5].id,
+        })
+        setLoadings((prevLoadings) => {
+          const newLoadings = [...prevLoadings]
+          newLoadings[index] = false
+          return newLoadings
+        })
       })
-      setLoadings((prevLoadings) => {
-        const newLoadings = [...prevLoadings]
-        newLoadings[index] = false
-        return newLoadings
-      })
-    })
   }
 
   useEffect(() => {
@@ -92,11 +100,22 @@ const PembobotanMataKuliah = () => {
             UtsTeori: res.data.data[3].bobot_component,
             LainPraktek: res.data.data[4].bobot_component,
             LainTeori: res.data.data[5].bobot_component,
+            idUasPraktek: res.data.data[0].id,
+            idUasTeori: res.data.data[1].id,
+            idUtsPraktek: res.data.data[2].id,
+            idUtsTeori: res.data.data[3].id,
+            idLainPraktek: res.data.data[4].id,
+            idLainTeori: res.data.data[5].id,
           })
         })
         .catch(function (error) {
           if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-            history.push('/dashboard')
+            history.push({
+              pathname: '/login',
+              state: {
+                session: true,
+              },
+            })
           } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
             history.push('/404')
           } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
@@ -141,45 +160,57 @@ const PembobotanMataKuliah = () => {
       await axios
         .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/update`, [
           {
-            id: 7,
+            id: bobot.idUasPraktek,
             name: 'EAS Praktek',
-            bobot_component: parseInt(form.getFieldValue('uas-praktek')),
-            course_id: id,
+            bobot_component: form.getFieldValue('uas-praktek')
+              ? parseInt(form.getFieldValue('uas-praktek'))
+              : 0,
+            course_id: parseInt(id),
             is_average: 1,
           },
           {
-            id: 8,
+            id: bobot.idUasTeori,
             name: 'EAS Teori',
-            bobot_component: parseInt(form.getFieldValue('uas-teori')),
-            course_id: id,
+            bobot_component: parseInt(form.getFieldValue('uas-teori'))
+              ? parseInt(form.getFieldValue('uas-teori'))
+              : 0,
+            course_id: parseInt(id),
             is_average: 1,
           },
           {
-            id: 9,
+            id: bobot.idUtsPraktek,
             name: 'ETS Praktek',
-            bobot_component: parseInt(form.getFieldValue('uts-praktek')),
-            course_id: id,
+            bobot_component: parseInt(form.getFieldValue('uts-praktek'))
+              ? parseInt(form.getFieldValue('uts-praktek'))
+              : 0,
+            course_id: parseInt(id),
             is_average: 1,
           },
           {
-            id: 10,
+            id: bobot.idUtsTeori,
             name: 'ETS Teori',
-            bobot_component: parseInt(form.getFieldValue('uts-teori')),
-            course_id: id,
+            bobot_component: parseInt(form.getFieldValue('uts-teori'))
+              ? parseInt(form.getFieldValue('uts-teori'))
+              : 0,
+            course_id: parseInt(id),
             is_average: 1,
           },
           {
-            id: 11,
+            id: bobot.idLainPraktek,
             name: 'Lain-lain Praktek',
-            bobot_component: parseInt(form.getFieldValue('lain-praktek')),
-            course_id: id,
+            bobot_component: parseInt(form.getFieldValue('lain-praktek'))
+              ? parseInt(form.getFieldValue('lain-praktek'))
+              : 0,
+            course_id: parseInt(id),
             is_average: 1,
           },
           {
-            id: 12,
+            id: bobot.idLainTeori,
             name: 'Lain-lain Teori',
-            bobot_component: parseInt(form.getFieldValue('lain-teori')),
-            course_id: id,
+            bobot_component: parseInt(form.getFieldValue('lain-teori'))
+              ? parseInt(form.getFieldValue('lain-teori'))
+              : 0,
+            course_id: parseInt(id),
             is_average: 1,
           },
         ])

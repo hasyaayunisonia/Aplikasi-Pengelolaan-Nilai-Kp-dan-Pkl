@@ -111,6 +111,36 @@ const CreateMataKuliah = () => {
     }
   }
 
+  const onFinish = async () => {
+    try {
+      console.log(data)
+      console.log('ini awal', currentYear, typeof currentYear)
+      console.log('ini akhir', nextYear)
+      await axios
+        .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`, {
+          prodi_id: data.prodi_id,
+          kode: data.kode,
+          name: data.name,
+          // tahun_ajaran_start: parseInt(data.tahun_ajaran_start),
+          // tahun_ajaran_end: parseInt(data.tahun_ajaran_end),
+          tahun_ajaran_start: currentYear,
+          tahun_ajaran_end: nextYear,
+          sks: parseInt(data.sks),
+        })
+        .then((response) => {
+          listmatakuliah()
+          notification.success({
+            message: 'Mata kuliah baru telah ditambahkan',
+          })
+        })
+    } catch (error) {
+      console.error(error)
+      notification.error({
+        message: 'Mata kuliah tidak dapat ditambahkan!',
+      })
+    }
+  }
+
   return isLoading ? (
     <Spin indicator={antIcon} />
   ) : (
@@ -128,14 +158,32 @@ const CreateMataKuliah = () => {
                 form={form}
                 name="basic"
                 wrapperCol={{ span: 24 }}
-                // onFinish={() => onFinish(0)}
+                onFinish={onFinish}
                 // onFinishFailed={onFinishFailed}
                 autoComplete="off"
+                fields={[
+                  {
+                    name: 'kodemk',
+                    value: data.kode,
+                  },
+                  {
+                    name: 'namaMataKuliah',
+                    value: data.name,
+                  },
+                  {
+                    name: 'Jurusan',
+                    value: data.prodi_id,
+                  },
+                  {
+                    name: 'SKS',
+                    value: data.sks,
+                  },
+                ]}
               >
                 <b>Kode Mata Kuliah</b>
                 <Form.Item
                   name="kodemk"
-                  //   rules={[{ required: true, message: 'Nama mata kuliah tidak boleh kosong!' }]}
+                  rules={[{ required: true, message: 'Kode MK tidak boleh kosong!' }]}
                 >
                   <Input
                     style={{ width: '15%' }}
@@ -202,12 +250,7 @@ const CreateMataKuliah = () => {
                 <b>Tahun Ajaran</b>
                 <Row>
                   <Col span={5}>
-                    <Form.Item
-                      name="tahunajaranStart"
-                      rules={[
-                        { required: true, message: 'Tahun ajaran mulai tidak boleh kosong!' },
-                      ]}
-                    >
+                    <Form.Item name="tahunajaranStart">
                       <DatePicker
                         picker="year"
                         // style={{ width: '31%', minWidth: '30%' }}
@@ -219,12 +262,7 @@ const CreateMataKuliah = () => {
                     </Form.Item>
                   </Col>
                   <Col span={5}>
-                    <Form.Item
-                      name="tahunajaranEnd"
-                      rules={[
-                        { required: true, message: 'Tahun ajaran selesai tidak boleh kosong!' },
-                      ]}
-                    >
+                    <Form.Item name="tahunajaranEnd">
                       <DatePicker
                         picker="year"
                         // style={{ width: '31%', minWidth: '30%' }}
@@ -269,7 +307,8 @@ const CreateMataKuliah = () => {
                   background: '#3399FF',
                   marginBottom: 16,
                 }}
-                onClick={() => handleButtonClick()}
+                // onClick={() => handleButtonClick()}
+                onClick={form.submit}
               >
                 Simpan
               </Button>

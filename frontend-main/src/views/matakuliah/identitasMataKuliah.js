@@ -2,7 +2,19 @@ import React, { useState, useEffect } from 'react'
 import 'antd/dist/antd.css'
 import 'src/scss/_custom.scss'
 import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-import { Col, Row, Form, Input, Button, DatePicker, Select, notification, Spin, Modal } from 'antd'
+import {
+  Col,
+  Row,
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Select,
+  notification,
+  Spin,
+  Modal,
+  Table,
+} from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
@@ -19,6 +31,12 @@ const IdentitasMataKuliah = () => {
   const { id } = useParams()
   const [matkul, setMatkul] = useState([])
   const [matkulName, setMatkulName] = useState('')
+  const [dataEasPraktek, setDataEasPraktek] = useState({})
+  const [dataEasTeori, setDataEasTeori] = useState({})
+  const [dataEtsTeori, setDataEtsTeori] = useState({})
+  const [dataEtsPraktek, setDataEtsPraktek] = useState({})
+  const [dataLainLainTeori, setDataLainLainTeori] = useState({})
+  const [dataLainLainPraktek, setDataLainLainPraktek] = useState({})
 
   useEffect(() => {
     if (!id) {
@@ -26,35 +44,325 @@ const IdentitasMataKuliah = () => {
     } else {
       const getMataKuliah = async () => {
         axios.defaults.withCredentials = true
-        await axios
-          .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`)
-          .then((res) => {
-            setIsLoading(false)
-            // console.log(res.data.data)
-            // console.log('ini dari db', res.data.data[1].id)
-            // console.log(typeof res.data.data[1].id)
-            // console.log('ini dari param', id)
-            // console.log(typeof id)
-            const idParam = parseInt(id)
-            const filteredData = res.data.data.find((item) => item.id === idParam)
-            // console.log(filteredData)
-            setMatkul(filteredData)
-            console.log(matkul)
-          })
-          .catch(function (error) {
-            if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-              history.push('/dashboard')
-            } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
+        try {
+          const detailMatkul = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`,
+          )
+          const filteredData = detailMatkul.data.data.find((item) => item.id === parseInt(id))
+          setMatkul(filteredData)
+          console.log(matkul)
+
+          //ETS T
+          const komponenEtsTeori = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+
+          const filteredDataEtsTeori = komponenEtsTeori.data.data.find(
+            (item) => item.name === 'ETS Teori',
+          )
+
+          setDataEtsTeori(filteredDataEtsTeori.criteria_data)
+
+          //ETS P
+          const komponenEtsPraktek = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+
+          const filteredDataEtsPraktek = komponenEtsPraktek.data.data.find(
+            (item) => item.name === 'ETS Praktek',
+          )
+
+          setDataEtsPraktek(filteredDataEtsPraktek.criteria_data)
+
+          //EAS T
+          const komponenEasTeori = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+
+          const filteredDataEasTeori = komponenEasTeori.data.data.find(
+            (item) => item.name === 'EAS Teori',
+          )
+
+          setDataEasTeori(filteredDataEasTeori.criteria_data)
+
+          //EAS P
+          const komponenEasPraktek = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+
+          const filteredDataEasPraktek = komponenEasPraktek.data.data.find(
+            (item) => item.name === 'EAS Praktek',
+          )
+
+          setDataEasPraktek(filteredDataEasPraktek.criteria_data)
+
+          //Lain Lain T
+          const komponenLainLainTeori = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+
+          const filteredDataLainLainTeori = komponenLainLainTeori.data.data.find(
+            (item) => item.name === 'Lain-lain Teori',
+          )
+
+          setDataLainLainTeori(filteredDataLainLainTeori.criteria_data)
+
+          //Lain Lain P
+          const komponenLainLainPraktek = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+
+          const filteredDataLainLainPraktek = komponenLainLainPraktek.data.data.find(
+            (item) => item.name === 'Lain-lain Praktek',
+          )
+
+          setDataLainLainPraktek(filteredDataLainLainPraktek.criteria_data)
+
+          setIsLoading(false)
+        } catch (error) {
+          if (error.response) {
+            const status = error.response.status
+            if (status >= 300 && status <= 399) {
+              history.push({
+                pathname: '/login',
+                state: {
+                  session: true,
+                },
+              })
+            } else if (status >= 400 && status <= 499) {
               history.push('/404')
-            } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
+            } else if (status >= 500 && status <= 599) {
               history.push('/500')
             }
-          })
+          }
+        }
       }
 
       getMataKuliah()
     }
   }, [])
+
+  useEffect(() => {
+    console.log('ini data eas p ', dataEasPraktek)
+  }, [dataEasPraktek])
+
+  useEffect(() => {
+    console.log('ini data eas t ', dataEasTeori)
+  }, [dataEasTeori])
+
+  useEffect(() => {
+    console.log('ini data ets t ', dataEtsTeori)
+  }, [dataEtsTeori])
+
+  useEffect(() => {
+    console.log('ini data ets p ', dataEtsPraktek)
+  }, [dataEtsPraktek])
+
+  useEffect(() => {
+    console.log('ini data ets p ', dataLainLainTeori)
+  }, [dataLainLainTeori])
+
+  useEffect(() => {
+    console.log('ini data ets p ', dataLainLainPraktek)
+  }, [dataLainLainPraktek])
+
+  const columns = [
+    {
+      title: 'Komponen Kriteria Penilaian EAS Praktek',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
+
+  const columns2 = [
+    {
+      title: 'Komponen Kriteria Penilaian EAS Teori',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
+
+  const columns3 = [
+    {
+      title: 'Komponen Kriteria Penilaian ETS Teori',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
+
+  const columns4 = [
+    {
+      title: 'Komponen Kriteria Penilaian ETS Praktek',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
+
+  const columns5 = [
+    {
+      title: 'Komponen Kriteria Penilaian Lain-Lain Teori',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
+
+  const columns6 = [
+    {
+      title: 'Komponen Kriteria Penilaian Lain-Lain Praktek',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
 
   const updateMataKuliah = () => {
     history.push(`/matakuliah/listmatakuliah/ubahmatakuliah/${id}`)
@@ -211,6 +519,90 @@ const IdentitasMataKuliah = () => {
               </Button>
             </CCol>
           </CRow>
+        </CCardBody>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardBody style={{ paddingLeft: '20px' }}>
+          <h8>
+            <b>Tabel Komponen Kriteria Penilaian ETS Teori</b>
+          </h8>
+          <Table
+            scroll={{ x: 'max-content' }}
+            columns={columns3}
+            dataSource={dataEtsTeori}
+            rowKey="id"
+            bordered
+          />
+        </CCardBody>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardBody style={{ paddingLeft: '20px' }}>
+          <h8>
+            <b>Tabel Komponen Kriteria Penilaian ETS Praktek</b>
+          </h8>
+          <Table
+            scroll={{ x: 'max-content' }}
+            columns={columns4}
+            dataSource={dataEtsPraktek}
+            rowKey="id"
+            bordered
+          />
+        </CCardBody>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardBody style={{ paddingLeft: '20px' }}>
+          <h8>
+            <b>Tabel Komponen Kriteria Penilaian EAS Teori</b>
+          </h8>
+          <Table
+            scroll={{ x: 'max-content' }}
+            columns={columns2}
+            dataSource={dataEasTeori}
+            rowKey="id"
+            bordered
+          />
+        </CCardBody>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardBody style={{ paddingLeft: '20px' }}>
+          <h8>
+            <b>Tabel Komponen Kriteria Penilaian EAS Praktek</b>
+          </h8>
+          <Table
+            scroll={{ x: 'max-content' }}
+            columns={columns}
+            dataSource={dataEasPraktek}
+            rowKey="id"
+            bordered
+          />
+        </CCardBody>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardBody style={{ paddingLeft: '20px' }}>
+          <h8>
+            <b>Tabel Komponen Kriteria Penilaian Lain-Lain Teori</b>
+          </h8>
+          <Table
+            scroll={{ x: 'max-content' }}
+            columns={columns5}
+            dataSource={dataLainLainTeori}
+            rowKey="id"
+            bordered
+          />
+        </CCardBody>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardBody style={{ paddingLeft: '20px' }}>
+          <h8>
+            <b>Tabel Komponen Kriteria Penilaian Lain-Lain Praktek</b>
+          </h8>
+          <Table
+            scroll={{ x: 'max-content' }}
+            columns={columns6}
+            dataSource={dataLainLainPraktek}
+            rowKey="id"
+            bordered
+          />
         </CCardBody>
       </CCard>
 
