@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import 'antd/dist/reset.css'
+import 'antd/dist/antd.css'
 import 'src/scss/_custom.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileDownload } from '@fortawesome/free-solid-svg-icons'
@@ -16,11 +16,9 @@ import {
   Space,
   notification,
 } from 'antd'
-import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 import { LoadingOutlined } from '@ant-design/icons'
 import { DownOutlined } from '@ant-design/icons'
-
 import ButtonGroup from 'antd/es/button/button-group'
 import { saveAs } from 'file-saver'
 
@@ -74,7 +72,7 @@ const RekapitulasiNilaiSeminar = () => {
       }
       console.log('ini hasil input', dataSeminar)
       await axios
-        .get(`/api/seminar/recapitulation`, {
+        .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/recapitulation`, {
           params: {
             year: dataSeminar.year,
             prodiId: dataSeminar.prodiId,
@@ -275,13 +273,16 @@ const RekapitulasiNilaiSeminar = () => {
         const prodiName = dataSeminar.prodiId === '0' ? 'D3' : 'D4'
         console.log('ini hasil input', dataSeminar)
         console.log('ini prodi', prodiName)
-        const response = await axios.get(`/api/seminar/generate-seminar`, {
-          params: {
-            year: dataSeminar.year,
-            prodiId: dataSeminar.prodiId,
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/generate-seminar`,
+          {
+            params: {
+              year: dataSeminar.year,
+              prodiId: dataSeminar.prodiId,
+            },
+            responseType: 'blob',
           },
-          responseType: 'blob',
-        })
+        )
 
         const contentDisposition = response.headers['content-disposition']
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/

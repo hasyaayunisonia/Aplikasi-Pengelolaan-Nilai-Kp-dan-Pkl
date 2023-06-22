@@ -96,9 +96,24 @@ const ListMataKuliah = lazyWithRetry(() => import('./views/matakuliah/listMataKu
 const CreateMataKuliah = lazyWithRetry(() => import('./views/matakuliah/createMataKuliah'))
 const DetailMataKuliah = lazyWithRetry(() => import('./views/matakuliah/detailMataKuliah'))
 const UpdateMataKuliah = lazyWithRetry(() => import('./views/matakuliah/updateMataKuliah'))
-const PembobotanNilaiMataKuliah = lazyWithRetry(() => import('./views/matakuliah/pembobotanNilaiMataKuliah'))
+const PembobotanNilaiMataKuliah = lazyWithRetry(() =>
+  import('./views/matakuliah/pembobotanNilaiMataKuliah'),
+)
 const RekapitulasiMataKuliah = lazyWithRetry(() =>
   import('./views/matakuliah/rekapitulasiMataKuliah'),
+)
+
+// ************** Nilai Seminar **************
+const KelolaKriteriaSeminar = lazyWithRetry(() =>
+  import('./views/nilaiseminar/kelolaKriteriaSeminar'),
+)
+const ListPesertaSeminar = lazyWithRetry(() => import('./views/nilaiseminar/listPesertaSeminar'))
+const CreateNilaiPesertaSeminar = lazyWithRetry(() =>
+  import('./views/nilaiseminar/createNilaiPesertaSeminar'),
+)
+
+const RekapitulasiNilaiSeminar = lazyWithRetry(() =>
+  import('./views/nilaiseminar/rekapitulasiNilaiSeminar'),
 )
 
 const routes = [
@@ -113,17 +128,17 @@ const routes = [
     path: '/mataKuliah/listMatakuliah',
     name: 'List Mata Kuliah',
     component: ListMataKuliah,
-    exact: true
+    exact: true,
   },
   {
     path: '/mataKuliah/listMatakuliah/tambahMatakuliah',
     name: 'Tambah Mata Kuliah',
-    component: CreateMataKuliah
+    component: CreateMataKuliah,
   },
   {
     path: '/mataKuliah/listMatakuliah/detailMatakuliah/:id',
     name: ':id',
-    component: DetailMataKuliah
+    component: DetailMataKuliah,
   },
   {
     path: '/mataKuliah/listMatakuliah/ubahMatakuliah',
@@ -140,6 +155,36 @@ const routes = [
     name: 'Rekapitulasi Nilai',
     component: RekapitulasiMataKuliah,
     exact: true,
+  },
+
+  // ************** Nilai Seminar **************
+  { path: '/nilaiSeminar', name: 'Nilai Seminar', component: KelolaKriteriaSeminar, exact: true },
+  {
+    path: '/nilaiSeminar/kelolaKriteria',
+    name: 'Kelola Kriteria Seminar',
+    component: KelolaKriteriaSeminar,
+  },
+  {
+    path: '/nilaiSeminar/penilaianSeminar',
+    name: 'Penilaian Seminar',
+    component: ListPesertaSeminar,
+    exact: true,
+  },
+  {
+    path: '/nilaiSeminar/penilaianSeminar/tambahNilaiPeserta',
+    name: 'Tambah Nilai Seminar',
+    component: CreateNilaiPesertaSeminar,
+    exact: true,
+  },
+  {
+    path: '/nilaiSeminar/penilaianSeminar/tambahNilaiPeserta/:id',
+    name: ':id',
+    component: CreateNilaiPesertaSeminar,
+  },
+  {
+    path: '/nilaiSeminar/rekapitulasiNilaiSeminar',
+    name: 'Rekapitulasi Nilai Seminar',
+    component: RekapitulasiNilaiSeminar,
   },
 
   // Pemetaan
