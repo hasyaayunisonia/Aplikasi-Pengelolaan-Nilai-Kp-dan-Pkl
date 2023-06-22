@@ -1912,7 +1912,26 @@ const PembobotanKriteriaMataKuliah = () => {
                   // style={{
                   //   maxWidth: 600,
                   // }}
+                  wrapperCol={{ span: 24 }}
                   autoComplete="off"
+                  fields={[
+                    {
+                      name: ['form_type'],
+                      // value: formData[index]?.name_form ? formData[index].name_form : undefined,
+                    },
+                    {
+                      name: ['tahapOptions'],
+                      // value: formData[index]?.type_form ? formData[index].type_form : undefined,
+                    },
+                    {
+                      name: ['aspekOptions'],
+                      // value: formData[index]?.aspect_name ? formData[index].aspect_name : undefined,
+                    },
+                    {
+                      name: ['bobot'],
+                      // value: formData[index]?.bobot_criteria ? formData[index].bobot_criteria: undefined,
+                    },
+                  ]}
                 >
                   <Form.List name="users">
                     {(fields, { add, remove }) => (
