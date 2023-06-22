@@ -1,89 +1,40 @@
 /* eslint-disable no-restricted-globals */
 import React, { useState, useEffect } from 'react'
-import 'antd/dist/reset.css'
+import 'antd/dist/antd.css'
 import 'src/scss/_custom.scss'
 import { CCard, CCardBody, CCol, CRow } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button, Col, Row, Table, Tooltip, Spin, Tabs, Modal, notification } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 
 const antIcon = <LoadingOutlined style={{ fontSize: 40 }} spin />
 
-const ListSeminarPerusahaan = () => {
+const ListPesertaSeminar = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loadings, setLoadings] = useState([])
   const [data, setData] = useState([])
   const [final, setFinal] = useState({})
-  let history = useNavigate()
+  let history = useHistory()
+  axios.defaults.withCredentials = true
 
   const pesertaSeminar = (id) => {
-    history(`/nilaiseminar/penilaianseminar/tambahnilaipeserta/${id}`)
+    history.push(`/nilaiseminar/penilaianseminar/tambahnilaipeserta/${id}`)
   }
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     axios.defaults.withCredentials = false
-  //     await axios
-  //       .get(`/api/seminar/company`)
-  //       .then((res) => {
-  //         setIsLoading(false)
-  //         console.log(res.data, data)
-  //         setData(
-  //           res.data.data.map((row) => ({
-  //             name: row.name,
-  //             id: row.id,
-  //             // participants: row.participants.map((participant) => participant.name).join(', '),
-  //             participants: row.participants.map((participant) => ({
-  //               id: participant.id,
-  //               name: participant.name,
-  //             })),
-  //           })),
-  //         )
-  //       })
-  //       .catch(function (error) {
-  //         if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-  //           history.push('/dashboard')
-  //         } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
-  //           history.push('/404')
-  //         } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
-  //           history.push('/500')
-  //         }
-  //       })
-  //   }
-
-  //   const getFinal = async () => {
-  //     await axios
-  //       .get(`/api/seminar/form/finalization`)
-  //       .then((res) => {
-  //         setFinal(res.data.data)
-  //         console.log('ini final', final)
-  //       })
-  //       .catch(function (error) {
-  //         if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-  //           history.push('/dashboard')
-  //         } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
-  //           history.push('/404')
-  //         } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
-  //           history.push('/500')
-  //         }
-  //       })
-  //   }
-
-  //   getData()
-  //   getFinal()
-  // }, [history])
-  // axios.defaults.withCredentials = true
-
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
-        axios.defaults.withCredentials = false
+        axios.defaults.withCredentials = true
 
-        const seminarResponse = await axios.get(`/api/seminar/company`)
-        const finalResponse = await axios.get(`/api/seminar/form/finalization`)
+        const seminarResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/company`,
+        )
+        const finalResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`,
+        )
 
         const seminarData = seminarResponse.data.data.map((row) => ({
           name: row.name,
@@ -103,7 +54,12 @@ const ListSeminarPerusahaan = () => {
         setIsLoading(false)
       } catch (error) {
         if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-          history.push('/dashboard')
+          history.push({
+            pathname: '/login',
+            state: {
+              session: true,
+            },
+          })
         } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
           history.push('/404')
         } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
@@ -141,12 +97,16 @@ const ListSeminarPerusahaan = () => {
   const handleOkFinalisasi = async () => {
     if (final.isFinalization === 0) {
       console.log('ini berhasil karena nilai final adalah', final.isFinalization)
-      await axios.post(`/api/seminar/form/finalization`).then((response) => {
-        notification.success({
-          message: 'Finalisasi nilai seminar berhasil',
+      await axios
+        .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`)
+        .then((response) => {
+          notification.success({
+            message: 'Finalisasi nilai seminar berhasil',
+          })
         })
-      })
-      const finalResponse = await axios.get(`/api/seminar/form/finalization`)
+      const finalResponse = await axios.get(
+        `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`,
+      )
       const finalData = finalResponse.data.data
       setFinal(finalData).catch((error) => {
         notification.error({
@@ -216,7 +176,6 @@ const ListSeminarPerusahaan = () => {
       ),
     },
   ]
-
   return isLoading ? (
     <Spin indicator={antIcon} />
   ) : (
@@ -248,4 +207,4 @@ const ListSeminarPerusahaan = () => {
     </>
   )
 }
-export default ListSeminarPerusahaan
+export default ListPesertaSeminar

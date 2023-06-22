@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import 'antd/dist/reset.css'
-import 'src/scss/_custom.scss'
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
+import 'antd/dist/antd.css'
+import { CCard, CCardBody, CCol, CRow, CCardHeader } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faPencil } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -17,8 +16,10 @@ import {
   Checkbox,
   message,
 } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios from 'axios'
+import { SearchOutlined } from '@ant-design/icons'
+import Highlighter from 'react-highlight-words'
 import { LoadingOutlined } from '@ant-design/icons'
 
 const antIcon = <LoadingOutlined style={{ fontSize: 40 }} spin />
@@ -33,8 +34,38 @@ const KelolaKriteriaSeminar = () => {
   const [form] = Form.useForm()
   const [form1] = Form.useForm()
   const [form2] = Form.useForm()
-  const history = useNavigate()
+  const history = useHistory()
   const totalRef = useRef(0)
+
+  useEffect(() => {
+    async function getlistKriteria() {
+      axios.defaults.withCredentials = true
+      await axios
+        .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria`)
+        .then((res) => {
+          setKriteria(res.data.data)
+          setIsLoading(false)
+        })
+
+        //   console.log(listKriteria)
+        .catch(function (error) {
+          if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
+            history.push({
+              pathname: '/login',
+              state: {
+                session: true,
+              },
+            })
+          } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
+            history.push('/404')
+          } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
+            history.push('/500')
+          }
+        })
+    }
+
+    getlistKriteria()
+  }, [history])
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -45,7 +76,7 @@ const KelolaKriteriaSeminar = () => {
   }
 
   const refreshData = (index) => {
-    axios.get(`/api/seminar/criteria`).then((result) => {
+    axios.get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria`).then((result) => {
       setKriteria(
         result.data.data,
         // .map((row) => ({
@@ -61,36 +92,6 @@ const KelolaKriteriaSeminar = () => {
     })
   }
 
-  useEffect(() => {
-    async function getlistKriteria() {
-      axios.defaults.withCredentials = false
-      await axios
-        .get(`/api/seminar/criteria`)
-        .then((res) => {
-          setIsLoading(false)
-          setKriteria(
-            res.data.data,
-            // .map((row) => ({
-            //   name: row.criteria_name,
-            //   id: row.id,
-            //   bobot: row.criteria_bobot,
-            // })),
-          )
-        })
-        .catch(function (error) {
-          if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-            history.push('/dashboard')
-          } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
-            history.push('/404')
-          } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
-            history.push('/500')
-          }
-        })
-    }
-
-    getlistKriteria()
-  }, [])
-
   const showModalCreate = () => {
     setIsModalCreateVisible(true)
   }
@@ -102,7 +103,7 @@ const KelolaKriteriaSeminar = () => {
   const handleOkCreate = async (index) => {
     enterLoading(index)
     await axios
-      .post(`/api/seminar/criteria`, {
+      .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria`, {
         criteria_name: criteriaName,
       })
       .then((response) => {
@@ -138,10 +139,14 @@ const KelolaKriteriaSeminar = () => {
     // console.log(dataEdit)
   }
 
+  const handleCancelEdit = () => {
+    setIsModalEditVisible(false)
+  }
+
   const handleOkEdit = async (index) => {
     enterLoading(index)
     await axios
-      .put(`/api/seminar//criteria/update/${choose.id}`, {
+      .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria/update/${choose.id}`, {
         criteria_name: choose.criteria_name,
       })
       .then((response) => {
@@ -159,7 +164,7 @@ const KelolaKriteriaSeminar = () => {
           return newLoadings
         })
         notification.error({
-          message: 'Kriteria seminar telah dipakai!',
+          message: 'Kriteria seminar gagal tersimpan!',
         })
       })
   }
@@ -186,7 +191,7 @@ const KelolaKriteriaSeminar = () => {
   const handleOkDelete = async (record, index) => {
     enterLoading(index)
     await axios
-      .delete(`/api/seminar/criteria/delete/${record.id}`)
+      .delete(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria/delete/${record.id}`)
       .then((response) => {
         refreshData(index)
         notification.success({
@@ -203,10 +208,6 @@ const KelolaKriteriaSeminar = () => {
           message: 'Kriteria seminar gagal dihapus!',
         })
       })
-  }
-
-  const handleCancelEdit = () => {
-    setIsModalEditVisible(false)
   }
 
   const handleCheckboxChange = async (e, record) => {
@@ -262,10 +263,13 @@ const KelolaKriteriaSeminar = () => {
     console.log(newData)
     try {
       await newData.map((item) => {
-        axios.put(`/api/seminar/criteria/update/${item.id}`, {
-          criteria_bobot: item.criteria_bobot,
-          is_selected: item.is_selected,
-        })
+        axios.put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria/update/${item.id}`,
+          {
+            criteria_bobot: item.criteria_bobot,
+            is_selected: item.is_selected,
+          },
+        )
       })
       notification.success({
         message: 'Bobot kriteria berhasil tersimpan',
@@ -372,7 +376,7 @@ const KelolaKriteriaSeminar = () => {
                 shape="circle"
                 style={{ backgroundColor: '#e9033d', borderColor: '#e9033d' }}
                 onClick={() => {
-                  showModalDelete(record, `delete-${record.id}`)
+                  showModalDelete(record, `delete- {record.id}`)
                 }}
               >
                 <FontAwesomeIcon icon={faTrashCan} style={{ color: 'black' }} />
@@ -441,7 +445,7 @@ const KelolaKriteriaSeminar = () => {
                   shape="square"
                   // className="disabled-button"
                   disabled
-                  style={{ color: 'white', background: '#e9033d', marginBottom: 16 }}
+                  style={{ color: 'white', background: '#FF0000', marginBottom: 16 }}
                   // onClick={() => handleButtonClick()}
                 >
                   Simpan
@@ -454,7 +458,7 @@ const KelolaKriteriaSeminar = () => {
                   shape="square"
                   // className="disabled-button"
                   disabled
-                  style={{ color: 'white', background: '#e9033d', marginBottom: 16 }}
+                  style={{ color: 'white', background: '#FF0000', marginBottom: 16 }}
                   // onClick={() => handleButtonClick()}
                 >
                   Simpan

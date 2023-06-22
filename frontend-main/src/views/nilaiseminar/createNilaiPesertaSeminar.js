@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import React, { useState, useEffect } from 'react'
-import 'antd/dist/reset.css'
+import 'antd/dist/antd.css'
 import 'src/scss/_custom.scss'
 import { CCard, CCardBody, CCol, CRow } from '@coreui/react'
 import {
@@ -16,8 +16,10 @@ import {
   DatePicker,
   notification,
 } from 'antd'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { LoadingOutlined } from '@ant-design/icons'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -57,7 +59,9 @@ const CreateNilaiPesertaSeminar = () => {
   const [form] = Form.useForm()
   const [form1] = Form.useForm()
   const [form2] = Form.useForm()
-  const history = useNavigate()
+  const history = useHistory()
+
+  axios.defaults.withCredentials = true
 
   useEffect(() => {
     if (!id) {
@@ -66,7 +70,7 @@ const CreateNilaiPesertaSeminar = () => {
       const getPesertaSeminar = async () => {
         axios.defaults.withCredentials = true
         await axios
-          .get(`/api/seminar/form/participant/${id}`)
+          .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/participant/${id}`)
           .then((res) => {
             setIsLoading(false)
             setPeserta(res.data.data)
@@ -74,7 +78,12 @@ const CreateNilaiPesertaSeminar = () => {
           })
           .catch(function (error) {
             if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-              history.push('/dashboard')
+              history.push({
+                pathname: '/login',
+                state: {
+                  session: true,
+                },
+              })
             } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
               history.push('/404')
             } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
@@ -83,23 +92,30 @@ const CreateNilaiPesertaSeminar = () => {
           })
       }
       const getlistKriteria = async () => {
-        axios.defaults.withCredentials = false
-        await axios.get(`/api/seminar/criteria`).then((res) => {
-          setIsLoading(false)
-          setKriteria(res.data.data.filter((row) => row.is_selected === 1))
-        })
+        axios.defaults.withCredentials = true
+        await axios
+          .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria`)
+          .then((res) => {
+            setIsLoading(false)
+            setKriteria(res.data.data.filter((row) => row.is_selected === 1))
+          })
       }
       const getlistDosenPenguji = async () => {
-        axios.defaults.withCredentials = false
+        axios.defaults.withCredentials = true
         await axios
-          .get(`/api/seminar/examiner`)
+          .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/examiner`)
           .then((res) => {
             setIsLoading(false)
             setDosenPenguji(res.data.data.penguji)
           })
           .catch(function (error) {
             if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-              history.push('/dashboard')
+              history.push({
+                pathname: '/login',
+                state: {
+                  session: true,
+                },
+              })
             } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
               history.push('/404')
             } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
@@ -108,16 +124,21 @@ const CreateNilaiPesertaSeminar = () => {
           })
       }
       const getlistDosenPembimbing = async () => {
-        axios.defaults.withCredentials = false
+        axios.defaults.withCredentials = true
         await axios
-          .get(`/api/seminar/examiner`)
+          .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/examiner`)
           .then((res) => {
             setIsLoading(false)
             setDosenPembimbing(res.data.data.pembimbing)
           })
           .catch(function (error) {
             if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-              history.push('/dashboard')
+              history.push({
+                pathname: '/login',
+                state: {
+                  session: true,
+                },
+              })
             } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
               history.push('/404')
             } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
@@ -128,7 +149,10 @@ const CreateNilaiPesertaSeminar = () => {
 
       const getIdForm = async () => {
         try {
-          const response = await axios.get(`/api/seminar/form/participant/${id}`)
+          axios.defaults.withCredentials = true
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/participant/${id}`,
+          )
           const dataForm = response.data.data.data_form
           setFormData(dataForm)
           // console.log(formData)
@@ -148,7 +172,18 @@ const CreateNilaiPesertaSeminar = () => {
             setExaminerType3(foundForm3)
           }
         } catch (error) {
-          console.error(error)
+          if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
+            history.push({
+              pathname: '/login',
+              state: {
+                session: true,
+              },
+            })
+          } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
+            history.push('/404')
+          } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
+            history.push('/500')
+          }
         }
       }
       getIdForm()
@@ -313,16 +348,24 @@ const CreateNilaiPesertaSeminar = () => {
         comment: comment,
       }
       // console.log('ini hasil input', dataSeminar)
-      await axios.put(`/api/seminar/form/${examinerType1.id}`, dataSeminar).then((response) => {
-        console.log('Data berhasil diperbarui:', response.data)
-      })
+      await axios
+        .put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/${examinerType1.id}`,
+          dataSeminar,
+        )
+        .then((response) => {
+          console.log('Data berhasil diperbarui:', response.data)
+        })
 
       const DataNilaiSeminar = [inputValues]
       // console.log(DataNilaiSeminar)
       const newDataNilaiSeminar = Object.values(DataNilaiSeminar[0])
       // console.log(newDataNilaiSeminar)
       await axios
-        .put(`/api/seminar/form/${examinerType1.id}/values`, newDataNilaiSeminar)
+        .put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/${examinerType1.id}/values`,
+          newDataNilaiSeminar,
+        )
         .then((response) => {
           console.log('Data berhasil diperbarui:', response.data)
         })
@@ -361,15 +404,23 @@ const CreateNilaiPesertaSeminar = () => {
       }
       console.log('ini hasil 1', dataSeminar)
 
-      await axios.put(`/api/seminar/form/${examinerType2.id}`, dataSeminar).then((response) => {
-        console.log('Data berhasil diperbarui:', response.data)
-      })
+      await axios
+        .put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/${examinerType2.id}`,
+          dataSeminar,
+        )
+        .then((response) => {
+          console.log('Data berhasil diperbarui:', response.data)
+        })
 
       const DataNilaiSeminar = [inputValues2]
       const newDataNilaiSeminar = Object.values(DataNilaiSeminar[0])
       console.log('ini hasil nilai', newDataNilaiSeminar)
       await axios
-        .put(`/api/seminar/form/${examinerType2.id}/values`, newDataNilaiSeminar)
+        .put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/${examinerType2.id}/values`,
+          newDataNilaiSeminar,
+        )
         .then((response) => {
           console.log('Data berhasil diperbarui:', response.data)
         })
@@ -434,15 +485,23 @@ const CreateNilaiPesertaSeminar = () => {
       }
       console.log('ini hasil 1', dataSeminar)
 
-      await axios.put(`/api/seminar/form/${examinerType3.id}`, dataSeminar).then((response) => {
-        console.log('Data berhasil diperbarui:', response.data)
-      })
+      await axios
+        .put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/${examinerType3.id}`,
+          dataSeminar,
+        )
+        .then((response) => {
+          console.log('Data berhasil diperbarui:', response.data)
+        })
 
       const DataNilaiSeminar = [inputValues3]
       const newDataNilaiSeminar = Object.values(DataNilaiSeminar[0])
       console.log('ini hasil nilai', newDataNilaiSeminar)
       await axios
-        .put(`/api/seminar/form/${examinerType3.id}/values`, newDataNilaiSeminar)
+        .put(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/${examinerType3.id}/values`,
+          newDataNilaiSeminar,
+        )
         .then((response) => {
           console.log('Data berhasil diperbarui:', response.data)
         })
@@ -528,7 +587,7 @@ const CreateNilaiPesertaSeminar = () => {
                             </td>
                             <td>
                               <DatePicker
-                                format="DD/MM/YYYY HH:mm:ss"
+                                format="DD/MM/YYYY"
                                 style={{ width: '100%' }}
                                 onChange={handleDateChange}
                                 value={selectedDate}
