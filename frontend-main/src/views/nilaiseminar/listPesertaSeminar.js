@@ -71,71 +71,99 @@ const ListPesertaSeminar = () => {
     fetchData()
   }, [history])
 
+  useEffect(() => {
+    console.log('ini isi final', final)
+  }, [final])
+
   const showModalFinalisasi = () => {
-    Modal.confirm({
-      title: (
-        <div style={{ fontSize: '15px' }}>
-          Apakah anda yakin akan melakukan finalisasi nilai seminar untuk seluruh peserta?
-        </div>
-      ),
-      zIndex: 9999999,
-      okText: 'Ya',
-      cancelText: 'Batal',
-      okButtonProps: {
-        style: {
-          backgroundColor: 'red',
-          color: 'white',
+    if (final.isFinalization === 0) {
+      Modal.confirm({
+        title: (
+          <div style={{ fontSize: '15px' }}>
+            Apakah anda yakin akan melakukan finalisasi nilai seminar untuk seluruh peserta?
+          </div>
+        ),
+        zIndex: 9999999,
+        okText: 'Ya',
+        cancelText: 'Batal',
+        okButtonProps: {
+          style: {
+            backgroundColor: 'red',
+            color: 'white',
+          },
+          className: 'custom-button',
         },
-        className: 'custom-button',
-      },
-      onOk: () => {
-        handleOkFinalisasi()
-      },
-    })
+        onOk: () => {
+          handleOkFinalisasi()
+        },
+      })
+    } else {
+      Modal.confirm({
+        title: 'Anda telah melakukan finalisasi!',
+        content: (
+          <div style={{ fontSize: '15px' }}>
+            <div>Apakah anda ingin membatalkan finalisasi?</div>
+          </div>
+        ),
+        zIndex: 9999999,
+        okText: 'Ya',
+        cancelText: 'Batal',
+        cancelButtonProps: {
+          style: {
+            backgroundColor: 'red',
+            color: 'white',
+          },
+          className: 'custom-button',
+        },
+        onOk: () => {
+          handleOkFinalisasi()
+        },
+      })
+    }
   }
 
   const handleOkFinalisasi = async () => {
     if (final.isFinalization === 0) {
-      console.log('ini berhasil karena nilai final adalah', final.isFinalization)
-      await axios
-        .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`)
-        .then((response) => {
-          notification.success({
-            message: 'Finalisasi nilai seminar berhasil',
+      try {
+        // console.log('ini berhasil karena nilai final adalah', final.isFinalization)
+        await axios
+          .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`)
+          .then((response) => {
+            notification.success({
+              message: 'Finalisasi nilai seminar berhasil',
+            })
           })
-        })
-      const finalResponse = await axios.get(
-        `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`,
-      )
-      const finalData = finalResponse.data.data
-      setFinal(finalData).catch((error) => {
+        const finalResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`,
+        )
+        const finalData = finalResponse.data.data
+        setFinal(finalData)
+        console.log('ini final ', final)
+      } catch {
         notification.error({
-          message: 'Finalisasi nilai seminar gagal',
+          message: 'Gagal finalisasi nilai seminar',
         })
-      })
+      }
     } else {
-      console.log('ini gagal, hasil dari final adalah', final)
-      Modal.error({
-        title: (
-          <div style={{ fontSize: '15px' }}>
-            <div>Anda telah melakukan finalisasi!</div>
-            <div> Tidak dapat mengubah data nilai seminar</div>
-          </div>
-        ),
-        zIndex: 9999999,
-        // okText: 'Ya',
-        // cancelText: 'Batal',
-        // okButtonProps: {
-        //   style: {
-        //     backgroundColor: 'red',
-        //     color: 'white',
-        //   },
-        //   className: 'custom-button',
-        // },
-        // onOk: () => {
-        //   handleOkFinalisasi()
-        // },
-      })
+      try {
+        console.log('ini berhasil karena nilai final adalah', final.isFinalization)
+        await axios
+          .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization/cancel`)
+          .then((response) => {
+            notification.success({
+              message: 'Finalisasi nilai seminar dibatalkan',
+            })
+          })
+        const finalResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/form/finalization`,
+        )
+        const finalData = finalResponse.data.data
+        setFinal(finalData)
+      } catch {
+        notification.error({
+          message: 'Gagal membatalkan finalisasi nilai seminar',
+        })
+      }
     }
   }
 
@@ -184,18 +212,20 @@ const ListPesertaSeminar = () => {
         <CCardBody>
           <CRow>
             <h6>Daftar Perusahaan</h6>
-            <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="px-4"
-                id="createKriteria"
-                style={{ backgroundColor: '#321FDB', borderColor: '321FDB' }}
-                onClick={showModalFinalisasi}
-              >
-                Finalisasi Nilai Seminar
-              </Button>
-            </CCol>
+            {localStorage.getItem('id_role') === '3' && (
+              <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="px-4"
+                  id="createKriteria"
+                  style={{ backgroundColor: '#321FDB', borderColor: '321FDB' }}
+                  onClick={showModalFinalisasi}
+                >
+                  Finalisasi Nilai Seminar
+                </Button>
+              </CCol>
+            )}
           </CRow>
           <CRow>
             <CCol sm={12}>

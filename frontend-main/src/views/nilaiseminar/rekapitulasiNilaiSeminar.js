@@ -39,6 +39,8 @@ const RekapitulasiNilaiSeminar = () => {
   const [modifiedDataArray2, setModifiedDataArray2] = useState([])
   const [modifiedDataArray3, setModifiedDataArray3] = useState([])
   const [modifiedDataArray4, setModifiedDataArray4] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [listKriteria, setListKriteria] = useState([])
 
   useEffect(() => {
     setTimeout(function () {
@@ -51,25 +53,30 @@ const RekapitulasiNilaiSeminar = () => {
     console.log(showButton)
   }, [showTable, showButton])
 
-  const prodiJurusan = [
-    { id: 0, nama: 'D3 Teknik Informatika' },
-    { id: 1, nama: 'D4 Teknik Informatika' },
-  ]
-
-  const handleProdiChange = (value) => {
-    setSelectedProdi(value)
-  }
-
   const handleDateChange = (date) => {
     setSelectedDate(date)
   }
 
-  const handleButtonClick = async () => {
+  useEffect(() => {
+    console.log('masuk pak eko', listKriteria)
+  }, [listKriteria])
+
+  const onFinish = async () => {
     try {
-      const dataSeminar = {
-        year: selectedDate.$y,
-        prodiId: selectedProdi,
+      let prodi
+
+      if (localStorage.getItem('id_prodi') === '0') {
+        prodi = 0
+      } else {
+        prodi = 1
       }
+
+      const dataSeminar = {
+        year: selectedDate.year(),
+        prodiId: prodi,
+      }
+      setLoading(true)
+
       console.log('ini hasil input', dataSeminar)
       await axios
         .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/recapitulation`, {
@@ -77,6 +84,7 @@ const RekapitulasiNilaiSeminar = () => {
             year: dataSeminar.year,
             prodiId: dataSeminar.prodiId,
           },
+          timeout: 60000, // Mengatur timeout eksekusi menjadi 60 detik (misalnya)
         })
         .then((res) => {
           // console.log(res.data)
@@ -93,7 +101,18 @@ const RekapitulasiNilaiSeminar = () => {
       setShowButton(true)
     } catch (error) {
       console.error(error)
+    } finally {
+      setLoading(false)
     }
+
+    const getKriteria = await axios.get(
+      `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/criteria`,
+    )
+    const filteredKriteria = getKriteria.data.data.filter((item) => item.is_selected === 1)
+
+    // console.log('ini data kriteria', filteredKriteria)
+    setListKriteria(filteredKriteria)
+    console.log('ini data kriteria', listKriteria)
   }
 
   const columns = [
@@ -114,6 +133,30 @@ const RekapitulasiNilaiSeminar = () => {
     {
       title: 'Nama',
       dataIndex: 'name',
+      // width: '35%',
+    },
+  ]
+
+  const nilai = [
+    {
+      title: 'No',
+      dataIndex: 'no',
+      width: '8%',
+      align: 'center',
+      render: (value, item, index) => {
+        return index + 1
+      },
+    },
+    {
+      title: 'Nama Kriteria',
+      render: (value, item, index) => {
+        return `NILAI ${index + 1}`
+      },
+      // width: '15%',
+    },
+    {
+      title: 'Keterangan',
+      dataIndex: 'criteria_name',
       // width: '35%',
     },
   ]
@@ -245,68 +288,57 @@ const RekapitulasiNilaiSeminar = () => {
 
   const finalColumns2 = [...columns]
 
-  const items = [
-    {
-      key: '1',
-      label: 'Excel',
-      onClick: () => {
-        console.log('masuk')
-        handleRekapitulasi('excel')
-      },
-    },
-    {
-      key: '2',
-      label: 'PDF',
-      onClick: () => {
-        handleRekapitulasi('pdf')
-      },
-    },
-  ]
-
-  const handleRekapitulasi = async (fileType) => {
-    if (fileType === 'excel') {
-      try {
-        const dataSeminar = {
-          year: selectedDate.$y,
-          prodiId: selectedProdi,
-        }
-        const prodiName = dataSeminar.prodiId === '0' ? 'D3' : 'D4'
-        console.log('ini hasil input', dataSeminar)
-        console.log('ini prodi', prodiName)
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/generate-seminar`,
-          {
-            params: {
-              year: dataSeminar.year,
-              prodiId: dataSeminar.prodiId,
-            },
-            responseType: 'blob',
-          },
-        )
-
-        const contentDisposition = response.headers['content-disposition']
-        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
-        const matches = filenameRegex.exec(contentDisposition)
-        const filenameFromApi =
-          matches && matches[1] ? matches[1].replace(/['"]/g, '') : 'rekapitulasi'
-
-        const fileName = `${prodiName}_${filenameFromApi}`
-
-        const blob = new Blob([response.data], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        })
-        saveAs(blob, fileName)
-      } catch (error) {
-        console.error(error)
-        notification.error({
-          message: 'Download file excel gagal',
-        })
+  const handleRekapitulasi = async () => {
+    try {
+      let prodi
+      if (localStorage.getItem('id_prodi') === '0') {
+        prodi = 0
+      } else {
+        prodi = 1
       }
-    } else if (fileType === 'pdf') {
-      // Logika untuk tombol PDF
-      // Gunakan API yang berbeda untuk menghasilkan file PDF
+
+      const dataSeminar = {
+        year: selectedDate.year(),
+        prodiId: prodi,
+      }
+      const prodiName = dataSeminar.prodiId === 0 ? 'D3' : 'D4'
+      console.log('ini hasil input', dataSeminar)
+      console.log('ini prodi', prodiName)
+      notification.info({
+        message: `Harap tunggu sedang memproses rekapitulasi nilai seminar`,
+        // description: 'Harap tunggu sedang memproses download nilai seminar',
+      })
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_GATEWAY_URL}grade/seminar/generate-seminar`,
+        {
+          params: {
+            year: dataSeminar.year,
+            prodiId: dataSeminar.prodiId,
+          },
+          responseType: 'blob',
+        },
+      )
+
+      const contentDisposition = response.headers['content-disposition']
+      const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+      const matches = filenameRegex.exec(contentDisposition)
+      const filenameFromApi =
+        matches && matches[1] ? matches[1].replace(/['"]/g, '') : 'rekapitulasi'
+
+      const fileName = `${prodiName}_${filenameFromApi}`
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
+      saveAs(blob, fileName)
+    } catch (error) {
+      console.error(error)
+      notification.error({
+        message: 'Download file excel gagal',
+      })
     }
   }
+
   var x = 1
   return isLoading ? (
     <Spin indicator={antIcon} />
@@ -321,34 +353,17 @@ const RekapitulasiNilaiSeminar = () => {
         <CCardBody>
           <CRow>
             <CCol>
-              <Form form={form} name="basic" wrapperCol={{ span: 24 }} autoComplete="off">
+              <Form
+                form={form}
+                name="basic"
+                wrapperCol={{ span: 24 }}
+                onFinish={onFinish}
+                autoComplete="off"
+              >
                 <CRow>
                   <Form.Item name="Prodi">
                     <CCol md={8}>
-                      <b>Prodi</b>
-                    </CCol>
-                    <CCol xs={6} md={4}>
-                      <Select
-                        // style={{ width: '100%' }}
-                        placeholder="Pilih Prodi Jurusan"
-                        onChange={handleProdiChange}
-                        value={selectedProdi}
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                      >
-                        {prodiJurusan.map((item) => (
-                          <Select.Option key={item.id}>{item.nama}</Select.Option>
-                        ))}
-                      </Select>
-                    </CCol>
-                  </Form.Item>
-                </CRow>
-                <CRow>
-                  <Form.Item name="Prodi">
-                    <CCol md={8}>
-                      <b>Tahun</b>
+                      <b>Pilih Tahun Awal Ajaran </b>
                     </CCol>
                     <CCol xs={6} md={4}>
                       <DatePicker
@@ -368,49 +383,37 @@ const RekapitulasiNilaiSeminar = () => {
                       size="sm"
                       shape="square"
                       style={{ color: 'white', background: '#3399FF', marginBottom: 16 }}
-                      onClick={() => handleButtonClick()}
+                      onClick={form.submit}
+                      disabled={loading}
                     >
                       Cari
                     </Button>
                   </CCol>
                 </CRow>
-                <CRow>
-                  {showButton && (
-                    <CCol style={{ display: 'flex', justifyContent: 'center' }}>
-                      {/* <Button
-                        id="generate"
-                        size="sm"
-                        shape="square"
-                        style={{ color: 'white', background: '#e9033d' }}
-                        onClick={() => handleRekapitulasi()}
-                      >
-                        <FontAwesomeIcon icon={faFileDownload} style={{ marginRight: '8px' }} />
-                        Download Rekapitulasi
-                      </Button> */}
-                      <Space size="middle">
-                        <Dropdown
-                          menu={{
-                            items,
-                          }}
-                        >
-                          {/* <a>
-                            More
-                          </a> */}
+                {loading ? (
+                  <Spin size="large" />
+                ) : (
+                  <>
+                    {' '}
+                    <CRow>
+                      {showButton && (
+                        <CCol style={{ display: 'flex', justifyContent: 'center' }}>
                           <Button
                             id="generate"
                             size="sm"
                             shape="square"
                             style={{ color: 'white', background: '#e9033d' }}
-                            // onClick={() => handleRekapitulasi()}
+                            onClick={handleRekapitulasi}
                           >
                             <FontAwesomeIcon icon={faFileDownload} style={{ marginRight: '8px' }} />
-                            Download Rekapitulasi <DownOutlined />
+                            Download Rekapitulasi
                           </Button>
-                        </Dropdown>
-                      </Space>
-                    </CCol>
-                  )}
-                </CRow>
+                        </CCol>
+                      )}
+                    </CRow>
+                  </>
+                )}
+
                 <br></br>
               </Form>
             </CCol>
@@ -430,17 +433,19 @@ const RekapitulasiNilaiSeminar = () => {
                     />
 
                     <br></br>
-                    {/* {showButton && (
-                    <Button
-                      id="generate"
-                      size="sm"
-                      shape="square"
-                      style={{ color: 'white', background: '#e9033d', marginBottom: 16 }}
-                      // onClick={() => handleButtonClick()}
-                    >
-                      <FontAwesomeIcon icon={faFileDownload} /> Download Rekapitulasi
-                    </Button>
-                  )} */}
+                    <h8>
+                      <b>Keterangan :</b>
+                    </h8>
+                    <br></br>
+                    <br></br>
+                    <Table
+                      scroll={{ x: 'max-content' }}
+                      columns={nilai}
+                      dataSource={listKriteria}
+                      rowKey="id"
+                      bordered
+                      pagination={false}
+                    />
                   </TabPane>
                 )}
                 {showTable && (
@@ -454,17 +459,20 @@ const RekapitulasiNilaiSeminar = () => {
                     />
 
                     <br></br>
-                    {/* {showButton && (
-                    <Button
-                      id="generate"
-                      size="sm"
-                      shape="square"
-                      style={{ color: 'white', background: '#e9033d', marginBottom: 16 }}
-                      // onClick={() => handleButtonClick()}
-                    >
-                      <FontAwesomeIcon icon={faFileDownload} /> Download Rekapitulasi
-                    </Button>
-                  )} */}
+                    <br></br>
+                    <h8>
+                      <b>Keterangan :</b>
+                    </h8>
+                    <br></br>
+                    <br></br>
+                    <Table
+                      scroll={{ x: 'max-content' }}
+                      columns={nilai}
+                      dataSource={listKriteria}
+                      rowKey="id"
+                      bordered
+                      pagination={false}
+                    />
                   </TabPane>
                 )}
                 {showTable && (
@@ -478,17 +486,19 @@ const RekapitulasiNilaiSeminar = () => {
                     />
 
                     <br></br>
-                    {/* {showButton && (
-                    <Button
-                      id="generate"
-                      size="sm"
-                      shape="square"
-                      style={{ color: 'white', background: '#e9033d', marginBottom: 16 }}
-                      // onClick={() => handleButtonClick()}
-                    >
-                      <FontAwesomeIcon icon={faFileDownload} /> Download Rekapitulasi
-                    </Button>
-                  )} */}
+                    <h8>
+                      <b>Keterangan :</b>
+                    </h8>
+                    <br></br>
+                    <br></br>
+                    <Table
+                      scroll={{ x: 'max-content' }}
+                      columns={nilai}
+                      dataSource={listKriteria}
+                      rowKey="id"
+                      bordered
+                      pagination={false}
+                    />
                   </TabPane>
                 )}
 
@@ -501,19 +511,6 @@ const RekapitulasiNilaiSeminar = () => {
                       rowKey="id"
                       bordered
                     />
-
-                    <br></br>
-                    {/* {showButton && (
-                    <Button
-                      id="generate"
-                      size="sm"
-                      shape="square"
-                      style={{ color: 'white', background: '#e9033d', marginBottom: 16 }}
-                      // onClick={() => handleButtonClick()}
-                    >
-                      <FontAwesomeIcon icon={faFileDownload} /> Download Rekapitulasi
-                    </Button>
-                  )} */}
                   </TabPane>
                 )}
               </Tabs>

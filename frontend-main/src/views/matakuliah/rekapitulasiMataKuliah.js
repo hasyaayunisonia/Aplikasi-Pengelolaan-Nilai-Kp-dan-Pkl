@@ -20,6 +20,7 @@ import axios from 'axios'
 import { LoadingOutlined } from '@ant-design/icons'
 import { DownOutlined } from '@ant-design/icons'
 import { saveAs } from 'file-saver'
+import moment from 'moment'
 
 const antIcon = <LoadingOutlined style={{ fontSize: 40 }} spin />
 const { TabPane } = Tabs
@@ -32,6 +33,8 @@ const RekapitulasiMataKuliah = () => {
   const [matkul, setMatkul] = useState([])
   const [dataTabel, setDataTabel] = useState([])
   const [activeTab, setActiveTab] = useState(null)
+  let history = useHistory()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setTimeout(function () {
@@ -39,20 +42,12 @@ const RekapitulasiMataKuliah = () => {
     }, 100)
   }, [])
 
-  const prodiJurusan = [
-    { id: 0, nama: 'D3 Teknik Informatika' },
-    { id: 1, nama: 'D4 Teknik Informatika' },
-  ]
-
-  const handleProdiChange = (value) => {
-    setSelectedProdi(value)
-  }
-
   const handleDateChange = (date) => {
     setSelectedDate(date)
   }
 
   useEffect(() => {
+    console.log('ini isi matkul ', matkul)
     if (matkul.length > 0) {
       setShowSelectMatkul(true)
     }
@@ -67,27 +62,40 @@ const RekapitulasiMataKuliah = () => {
     getDataMatkul(key)
   }
 
-  const handleButtonClick = async () => {
+  const onFinish = async () => {
     try {
-      const dataSeminar = {
-        year: selectedDate.$y,
-        prodiId: selectedProdi,
+      // setMatkul(null)
+      let prodi
+
+      if (localStorage.getItem('id_prodi') === '0') {
+        prodi = 0
+      } else {
+        prodi = 1
       }
+
+      const dataSeminar = {
+        year: selectedDate.year(),
+        prodiId: prodi,
+      }
+
+      setLoading(true)
       console.log('ini hasil input', dataSeminar, 'tipenyaa ', typeof dataSeminar.prodiId)
-      await axios
-        .get(`/api/courses/recapitulation`, {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/recapitulation`,
+        {
           params: {
-            year: dataSeminar.year,
             prodiId: dataSeminar.prodiId,
+            year: dataSeminar.year,
           },
-        })
-        .then((res) => {
-          // console.log(res.data.data)
-          setMatkul(res.data.data)
-          console.log('matkul', matkul)
-        })
+          timeout: 60000, // Mengatur timeout eksekusi menjadi 60 detik (misalnya)
+        },
+      )
+
+      setMatkul(response.data.data)
     } catch (error) {
       console.error(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -152,6 +160,24 @@ const RekapitulasiMataKuliah = () => {
       dataIndex: 'total',
     },
   ]
+
+  // const items = [
+  //   {
+  //     key: '1',
+  //     label: 'Excel',
+  //     onClick: () => {
+  //       console.log('masuk')
+  //       handleRekapitulasi('excel')
+  //     },
+  //   },
+  //   {
+  //     key: '2',
+  //     label: 'PDF',
+  //     onClick: () => {
+  //       handleRekapitulasi('pdf')
+  //     },
+  //   },
+  // ]
 
   const getDataMatkul = (data) => {
     const modifiedData = matkul[data].participant_data
@@ -266,63 +292,101 @@ const RekapitulasiMataKuliah = () => {
     </TabPane>
   ))
 
-  const items = [
-    {
-      key: '1',
-      label: 'Excel',
-      onClick: () => {
-        console.log('masuk')
-        handleRekapitulasi('excel')
-      },
-    },
-    {
-      key: '2',
-      label: 'PDF',
-      onClick: () => {
-        handleRekapitulasi('pdf')
-      },
-    },
-  ]
+  // const handleRekapitulasi = async (fileType) => {
+  //   if (fileType === 'excel') {
+  //     try {
+  //       const dataSeminar = {
+  //         year: selectedDate.$y,
+  //         prodiId: selectedProdi,
+  //       }
+  //       const prodiName = dataSeminar.prodiId === '0' ? 'D3' : 'D4'
+  //       console.log('ini hasil input', dataSeminar)
+  //       console.log('ini prodi', prodiName)
+  //       const response = await axios.get(
+  //         `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/generate-course`,
+  //         {
+  //           params: {
+  //             year: dataSeminar.year,
+  //             prodiId: dataSeminar.prodiId,
+  //           },
+  //           responseType: 'blob',
+  //         },
+  //       )
 
-  const handleRekapitulasi = async (fileType) => {
-    if (fileType === 'excel') {
-      try {
-        const dataSeminar = {
-          year: selectedDate.$y,
-          prodiId: selectedProdi,
-        }
-        const prodiName = dataSeminar.prodiId === '0' ? 'D3' : 'D4'
-        console.log('ini hasil input', dataSeminar)
-        console.log('ini prodi', prodiName)
-        const response = await axios.get(`/api/courses/generate-course`, {
+  //       const contentDisposition = response.headers['content-disposition']
+  //       const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+  //       const matches = filenameRegex.exec(contentDisposition)
+  //       const filenameFromApi =
+  //         matches && matches[1] ? matches[1].replace(/['"]/g, '') : 'rekapitulasi'
+
+  //       const fileName = `${prodiName}_${filenameFromApi}`
+
+  //       const blob = new Blob([response.data], {
+  //         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  //       })
+  //       saveAs(blob, fileName)
+  //     } catch (error) {
+  //       console.error(error)
+  //       notification.error({
+  //         message: 'Download file excel gagal',
+  //       })
+  //     }
+  //   } else if (fileType === 'pdf') {
+  //     // Logika untuk tombol PDF
+  //     // Gunakan API yang berbeda untuk menghasilkan file PDF
+  //   }
+  // }
+
+  const handleRekapitulasi = async () => {
+    try {
+      let prodi
+      if (localStorage.getItem('id_prodi') === '0') {
+        prodi = 0
+      } else {
+        prodi = 1
+      }
+
+      const dataSeminar = {
+        year: selectedDate.year(),
+        prodiId: prodi,
+      }
+
+      // console.log('ini prodi', dataSeminar.prodiId)
+      const prodiName = dataSeminar.prodiId === 0 ? 'D3' : 'D4'
+      console.log('ini hasil input', dataSeminar)
+      console.log('ini prodi', prodiName)
+      notification.info({
+        message: `Harap tunggu sedang memproses rekapitulasi nilai`,
+        // description: 'Harap tunggu sedang memproses download nilai seminar',
+      })
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/generate-course`,
+        {
           params: {
             year: dataSeminar.year,
             prodiId: dataSeminar.prodiId,
           },
           responseType: 'blob',
-        })
+        },
+      )
 
-        const contentDisposition = response.headers['content-disposition']
-        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
-        const matches = filenameRegex.exec(contentDisposition)
-        const filenameFromApi =
-          matches && matches[1] ? matches[1].replace(/['"]/g, '') : 'rekapitulasi'
+      const contentDisposition = response.headers['content-disposition']
+      const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+      const matches = filenameRegex.exec(contentDisposition)
+      const filenameFromApi =
+        matches && matches[1] ? matches[1].replace(/['"]/g, '') : 'rekapitulasi'
 
-        const fileName = `${prodiName}_${filenameFromApi}`
+      const fileName = `${prodiName}_${filenameFromApi}`
 
-        const blob = new Blob([response.data], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        })
-        saveAs(blob, fileName)
-      } catch (error) {
-        console.error(error)
-        notification.error({
-          message: 'Download file excel gagal',
-        })
-      }
-    } else if (fileType === 'pdf') {
-      // Logika untuk tombol PDF
-      // Gunakan API yang berbeda untuk menghasilkan file PDF
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
+      saveAs(blob, fileName)
+    } catch (error) {
+      console.error(error)
+      notification.error({
+        message: 'Download file excel gagal',
+      })
     }
   }
 
@@ -343,37 +407,14 @@ const RekapitulasiMataKuliah = () => {
                 form={form}
                 name="basic"
                 wrapperCol={{ span: 24 }}
-                // onFinish={() => onFinish(0)}
+                onFinish={onFinish}
                 // onFinishFailed={onFinishFailed}
                 autoComplete="off"
               >
                 <CRow>
-                  <Form.Item name="Prodi">
+                  <Form.Item name="Tahun">
                     <CCol md={8}>
-                      <b>Prodi</b>
-                    </CCol>
-                    <CCol xs={6} md={4}>
-                      <Select
-                        // style={{ width: '100%' }}
-                        placeholder="Pilih Prodi Jurusan"
-                        onChange={handleProdiChange}
-                        value={selectedProdi}
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                      >
-                        {prodiJurusan.map((item) => (
-                          <Select.Option key={item.id}>{item.nama}</Select.Option>
-                        ))}
-                      </Select>
-                    </CCol>
-                  </Form.Item>
-                </CRow>
-                <CRow>
-                  <Form.Item name="Prodi">
-                    <CCol md={8}>
-                      <b>Tahun</b>
+                      <b>Pilih Tahun Awal Ajaran</b>
                     </CCol>
                     <CCol xs={6} md={4}>
                       <DatePicker
@@ -394,38 +435,38 @@ const RekapitulasiMataKuliah = () => {
                       shape="square"
                       // loading={loadings[0]}
                       style={{ color: 'white', background: '#3399FF', marginBottom: 16 }}
-                      onClick={handleButtonClick}
+                      onClick={form.submit}
+                      disabled={loading}
                     >
                       Tarik Nilai
                     </Button>
                   </CCol>
                 </CRow>
-                {showSelectMatkul && (
+                {loading ? (
+                  <Spin size="large" />
+                ) : (
                   <>
-                    <CRow>
-                      <CCol style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Space size="middle">
-                          <Dropdown
-                            menu={{
-                              items,
-                            }}
-                          >
+                    {showSelectMatkul && (
+                      <>
+                        <CRow>
+                          <CCol style={{ display: 'flex', justifyContent: 'center' }}>
                             <Button
                               id="generate"
                               size="sm"
                               shape="square"
                               style={{ color: 'white', background: '#e9033d' }}
+                              onClick={handleRekapitulasi}
                             >
                               <FontAwesomeIcon
                                 icon={faFileDownload}
                                 style={{ marginRight: '8px' }}
                               />
-                              Download Rekapitulasi <DownOutlined />
+                              Download Rekapitulasi
                             </Button>
-                          </Dropdown>
-                        </Space>
-                      </CCol>
-                    </CRow>
+                          </CCol>
+                        </CRow>
+                      </>
+                    )}
                   </>
                 )}
               </Form>
@@ -435,11 +476,6 @@ const RekapitulasiMataKuliah = () => {
             <CCol>
               <Tabs type="card" onChange={handleTabChange} activeKey={activeTab}>
                 {tabPanes}
-                {/* <TabPane tab="MK 1" key="1"></TabPane>
-                <TabPane tab="MK 2" key="2"></TabPane>
-                <TabPane tab="MK 3" key="3"></TabPane>
-                <TabPane tab="MK 4" key="4"></TabPane>
-                <TabPane tab="MK 5" key="4"></TabPane> */}
               </Tabs>
             </CCol>
           </CRow>

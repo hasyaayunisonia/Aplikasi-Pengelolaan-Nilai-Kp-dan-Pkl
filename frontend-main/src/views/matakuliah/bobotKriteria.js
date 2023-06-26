@@ -58,7 +58,6 @@ const PembobotanKriteriaMataKuliah = () => {
   const [dataKriteria, setDataKriteria] = useState([])
   const [number, setNumber] = useState(0)
   const [formName, setFormName] = useState('')
-  const [formDataAwal, setFormDataAwal] = useState([])
 
   const [current, setCurrent] = useState(0)
   const [isSpinner, setIsSpinner] = useState(true)
@@ -294,17 +293,12 @@ const PembobotanKriteriaMataKuliah = () => {
         id: item.id,
       }))
       setFormData(mappedData)
-      setFormDataAwal(mappedData)
     }
   }, [dataKriteria])
 
   useEffect(() => {
     console.log('ini FORM DATA', formData)
   }, [formData])
-
-  useEffect(() => {
-    console.log('ini FORM DATA Awal', formDataAwal)
-  }, [formDataAwal])
 
   useEffect(() => {
     // console.log('ini FORM Name', formName)
@@ -526,7 +520,6 @@ const PembobotanKriteriaMataKuliah = () => {
             searchData = fetchedKomponen.find((item) => item.name === 'ETS Teori')
             setKomponen(searchData)
             console.log('==> ini komponen ETS Teori', komponen)
-
             return komponen
           } else if (activeTab === '1') {
             searchData = fetchedKomponen.find((item) => item.name === 'ETS Praktek')
@@ -573,47 +566,47 @@ const PembobotanKriteriaMataKuliah = () => {
   const handleFormPenilaianChange = async (value, index) => {
     findActiveTab()
     // console.log('ini formName', value)
-    console.log('Index:', index)
+    // console.log('Index:', index)
 
     setFormName(value)
-    // console.log('ini formName', formName)
+    console.log('ini formName', formName)
 
     const selectedForm = formPenilaian.find((item) => item.form_name === value)
-    // console.log('nemu Evaluasi Form Penilaian', selectedForm)
+    console.log('nemu Evaluasi Form Penilaian', selectedForm)
 
     const updatedFormData = [...formData]
-    updatedFormData[index - 1] = {
-      ...updatedFormData[index - 1],
+    updatedFormData[index] = {
+      ...updatedFormData[index],
       name_form: selectedForm.form_name,
       // type_form: selectedForm.form_type,
       component_id: dataKriteria.id,
     }
     setFormData(updatedFormData)
     console.log('INI DI TF KE FORM DATA', formData)
-    // try {
-    //   // console.log('ini adalah formtype ', formType)
-    //   // console.log('ini adalah prodiID ', matkul.prodi_id)
-    //   await axios
-    //     .get(
-    //       `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
-    //       {
-    //         params: {
-    //           formType: value,
-    //           prodiId: matkul.prodi_id,
-    //         },
-    //       },
-    //     )
-    //     .then((res) => {
-    //       setTahapOptions(res.data.data)
-    //       console.log('ini tahap', tahapOptions)
-    //       // res.data.data.map((item) => {
-    //       //   return data.push(item.aspek)
-    //       // })
-    //       // console.log('ini data ea ', data)
-    //     })
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    try {
+      // console.log('ini adalah formtype ', formType)
+      // console.log('ini adalah prodiID ', matkul.prodi_id)
+      await axios
+        .get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/criteria/evaluation-form/aspect/type`,
+          {
+            params: {
+              formType: value,
+              prodiId: matkul.prodi_id,
+            },
+          },
+        )
+        .then((res) => {
+          setTahapOptions(res.data.data)
+          console.log('ini tahap', tahapOptions)
+          // res.data.data.map((item) => {
+          //   return data.push(item.aspek)
+          // })
+          // console.log('ini data ea ', data)
+        })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleTahapChange = async (value, index) => {
@@ -732,27 +725,27 @@ const PembobotanKriteriaMataKuliah = () => {
     console.log('ini postdata ', postData)
     // console.log(typeof postData.id)
 
-    // try {
-    //   await axios
-    //     .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
-    //       id: komponen.id,
-    //       name: komponen.name,
-    //       criteria_data: formData,
-    //       is_average: 1,
-    //     })
-    //     .then((response) => {
-    //       // Tangani respons setelah berhasil melakukan POST
-    //       console.log('Berhasil melakukan POST', response.data)
-    //       notification.success({
-    //         message: 'Data bobot kriteria tersimpan',
-    //       })
-    //     })
-    // } catch (error) {
-    //   console.error('Gagal melakukan POST', error)
-    //   notification.error({
-    //     message: 'Data bobot kriteria gagal tersimpan',
-    //   })
-    // }
+    try {
+      await axios
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/update`, {
+          id: komponen.id,
+          name: komponen.name,
+          criteria_data: formData,
+          is_average: 1,
+        })
+        .then((response) => {
+          // Tangani respons setelah berhasil melakukan POST
+          console.log('Berhasil melakukan POST', response.data)
+          notification.success({
+            message: 'Data bobot kriteria tersimpan',
+          })
+        })
+    } catch (error) {
+      console.error('Gagal melakukan POST', error)
+      notification.error({
+        message: 'Data bobot kriteria gagal tersimpan',
+      })
+    }
   }
 
   //INI UNTUK ETS P
@@ -1687,16 +1680,6 @@ const PembobotanKriteriaMataKuliah = () => {
                   autoComplete="off"
                   fields={[
                     {
-                      name: ['selectData'],
-                      // value: formData.map((item) => ({
-                      //   defaultValue: item.defaultValue,
-                      // })),
-                    },
-                    {
-                      name: ['evaluasi-penilaian'],
-                      // value: formData[index]?.name_form ? formData[index].name_form : undefined,
-                    },
-                    {
                       name: ['form_type'],
                       // value: formData[index]?.name_form ? formData[index].name_form : undefined,
                     },
@@ -1714,47 +1697,6 @@ const PembobotanKriteriaMataKuliah = () => {
                     },
                   ]}
                 >
-                  {formDataAwal.map((data, index) => (
-                    <Form.Item
-                      key={index}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Evaluasi Form Penilaian tidak boleh kosong!',
-                        },
-                      ]}
-                      validateTrigger={['onChange', 'onBlur']}
-                      style={{ paddingRight: '35px' }}
-                    >
-                      <Row align="middle" gutter={8}>
-                        <Col span={22}>
-                          <Select
-                            style={{ width: '100%' }}
-                            defaultValue={
-                              formData[index]?.name_form ? formData[index].name_form : undefined
-                            }
-                            onChange={(value) => handleFormPenilaianChange(value, index)}
-                          >
-                            {formPenilaian.map((item) => (
-                              <Select.Option key={item.form_type} value={item.form_type}>
-                                {item.form_type}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Col>
-                        <Col span={2} style={{ textAlign: 'right' }}>
-                          <MinusCircleOutlined
-                            style={{ color: 'red' }}
-                            // onClick={() =>
-                            // handleRemoveField(field.name, formData.length + 1, remove)
-                            // }
-                          />
-                        </Col>
-                      </Row>
-                    </Form.Item>
-                  ))}
-
-                  <br></br>
                   <Form.List name="users">
                     {(fields, { add, remove }) => (
                       <>
@@ -1790,14 +1732,12 @@ const PembobotanKriteriaMataKuliah = () => {
                                     <Select
                                       // style={{ width: '100%', height: '40px' }}
                                       style={{ width: '104%' }}
-                                      // defaultValue={
-                                      //   formData[index]?.name_form
-                                      //     ? formData[index].name_form
-                                      //     : undefined
-                                      // }
-                                      onChange={(value) =>
-                                        handleFormPenilaianChange(value, formData.length + 1)
+                                      defaultValue={
+                                        formData[index]?.name_form
+                                          ? formData[index].name_form
+                                          : undefined
                                       }
+                                      onChange={(value) => handleFormPenilaianChange(value, index)}
                                     >
                                       {formPenilaian.map((item, i) => (
                                         <Select.Option key={item.form_type} value={item.form_type}>
@@ -1807,15 +1747,121 @@ const PembobotanKriteriaMataKuliah = () => {
                                     </Select>
                                   </Form.Item>
                                 </Col>
+                                <Col span={22}>
+                                  <b>Evaluasi Penilaian</b>
+                                  <Form.Item
+                                    {...field}
+                                    name={[field.name, 'tahapOptions']}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: 'Evaluasi penilaian tidak boleh kosong',
+                                      },
+                                    ]}
+                                    validateTrigger={['onChange', 'onBlur']}
+                                    style={{ paddingRight: '35px' }}
+                                  >
+                                    <Select
+                                      style={{ width: '104%', height: '40px' }}
+                                      dropdownRender={(menu) => (
+                                        <div style={{ overflowY: 'auto' }}>{menu}</div>
+                                      )}
+                                      defaultValue={
+                                        formData[index]?.type_form
+                                          ? formData[index].type_form
+                                          : undefined
+                                      }
+                                      onChange={(value) => handleTahapChange(value, index)}
+                                    >
+                                      {tahapOptions.map((item, i) => (
+                                        <Select.Option key={item.name} value={item.name}>
+                                          <div style={{ whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
+                                            {item.name}
+                                          </div>
+                                        </Select.Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
+                                </Col>
+                                <Col span={22}>
+                                  <Form.Item
+                                    {...field}
+                                    // label="Sight"
+                                    name={[field.name, 'aspekOptions']}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: 'Aspek tidak boleh kosong',
+                                      },
+                                    ]}
+                                    validateTrigger={['onChange', 'onBlur']}
+                                    style={{ paddingRight: '35px' }}
+                                  >
+                                    <b>Aspek</b>
+                                    <Select
+                                      style={{ width: '104%', height: '40px' }}
+                                      dropdownRender={(menu) => (
+                                        <div style={{ overflowY: 'auto' }}>{menu}</div>
+                                      )}
+                                      defaultValue={
+                                        formData[index]?.aspect_name
+                                          ? formData[index].aspect_name
+                                          : undefined
+                                      }
+                                      onChange={(value) => handleAspekChange(value, index)}
+                                    >
+                                      {aspekOptions.map((item, i) => (
+                                        <Select.Option key={item.name} value={item.name}>
+                                          <div style={{ whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
+                                            {' '}
+                                            {item.name}
+                                          </div>
+                                        </Select.Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
+                                </Col>
+                                <Col span={22}>
+                                  {number === 1 && (
+                                    <>
+                                      <b>Bobot </b>
+                                      <Form.Item
+                                        {...field}
+                                        name={[field.name, 'bobot']}
+                                        rules={[
+                                          {
+                                            required: true,
+                                            message: 'Bobot tidak boleh kosong',
+                                          },
+                                        ]}
+                                        validateTrigger={['onChange', 'onBlur']}
+                                      >
+                                        <InputNumber
+                                          // id={text.id}
+                                          type="number"
+                                          min="0"
+                                          max="100"
+                                          addonAfter="%"
+                                          // disabled={text.is_selected === 0}
+                                          // value={text.criteria_bobot}
+                                          defaultValue={
+                                            formData[index]?.bobot_criteria
+                                              ? formData[index].bobot_criteria
+                                              : undefined
+                                          }
+                                          onChange={(value) => handleBobotChange(value, index)}
+                                        />
+                                      </Form.Item>
+                                    </>
+                                  )}
+                                </Col>
                               </Row>
                               <Col span={22} style={{ textAlign: 'right' }}>
                                 {' '}
                                 <MinusCircleOutlined
                                   style={{ color: 'red' }}
                                   // onClick={() => remove(field.name)}
-                                  onClick={() =>
-                                    handleRemoveField(field.name, formData.length + 1, remove)
-                                  }
+                                  onClick={() => handleRemoveField(field.name, index, remove)}
                                 />
                               </Col>
                             </div>

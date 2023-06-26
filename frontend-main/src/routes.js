@@ -95,7 +95,7 @@ const pengelolaanPertanyaanFeedback = lazyWithRetry(() =>
 const ListMataKuliah = lazyWithRetry(() => import('./views/matakuliah/listMataKuliah'))
 const CreateMataKuliah = lazyWithRetry(() => import('./views/matakuliah/createMataKuliah'))
 const DetailMataKuliah = lazyWithRetry(() => import('./views/matakuliah/detailMataKuliah'))
-const UpdateMataKuliah = lazyWithRetry(() => import('./views/matakuliah/updateMataKuliah'))
+const UbahMataKuliah = lazyWithRetry(() => import('./views/matakuliah/ubahMataKuliah'))
 const PembobotanNilaiMataKuliah = lazyWithRetry(() =>
   import('./views/matakuliah/pembobotanNilaiMataKuliah'),
 )
@@ -115,6 +115,8 @@ const CreateNilaiPesertaSeminar = lazyWithRetry(() =>
 const RekapitulasiNilaiSeminar = lazyWithRetry(() =>
   import('./views/nilaiseminar/rekapitulasiNilaiSeminar'),
 )
+//Nilai Industri
+const ListNilaiIndustri = lazyWithRetry(() => import('./views/nilaiindustri/listNilaiIndustri'))
 
 const routes = [
   // Page
@@ -141,14 +143,9 @@ const routes = [
     component: DetailMataKuliah,
   },
   {
-    path: '/mataKuliah/listMatakuliah/ubahMatakuliah',
-    name: 'Ubah Mata Kuliah',
-    component: UpdateMataKuliah,
-  },
-  {
     path: '/mataKuliah/listMatakuliah/ubahMatakuliah/:id',
     name: ':id',
-    component: UpdateMataKuliah,
+    component: UbahMataKuliah,
   },
   {
     path: '/mataKuliah/rekapitulasiNilai',
@@ -186,6 +183,8 @@ const routes = [
     name: 'Rekapitulasi Nilai Seminar',
     component: RekapitulasiNilaiSeminar,
   },
+  // *************** Nilai Industri ***************
+  { path: '/nilaiindustri', name: 'Nilai Industri', component: ListNilaiIndustri, exact: true },
 
   // Pemetaan
   { path: '/hasilPemetaan', name: 'Hasil Pemetaan', component: HasilPemetaan, exact: true },

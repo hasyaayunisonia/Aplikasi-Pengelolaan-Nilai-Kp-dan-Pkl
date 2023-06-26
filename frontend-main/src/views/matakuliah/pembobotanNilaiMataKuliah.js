@@ -407,7 +407,7 @@ const PembobotanMataKuliah = () => {
                     </Form.Item>
                   </Col>
                   <Col span={8} style={{ paddingRight: '30px' }}>
-                    <b>Lain - Lain Teori</b>
+                    <b>Lain - Lain Praktek</b>
                     <Form.Item
                       name="lain-praktek"
                       rules={[
@@ -533,7 +533,7 @@ const PembobotanMataKuliah = () => {
                     loading={loadings[0]}
                     style={{
                       color: 'white',
-                      background: countBobot() === 100 ? '#1677ff' : '#FF0000',
+                      background: countBobot() === 100 ? '#1677ff' : '#808080',
                       margin: '15px 15px 15px 30px',
                     }}
                     disabled={countBobot() !== 100}

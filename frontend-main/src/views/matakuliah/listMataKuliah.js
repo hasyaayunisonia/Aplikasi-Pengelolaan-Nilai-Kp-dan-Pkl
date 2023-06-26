@@ -24,36 +24,50 @@ const ListMataKuliah = () => {
   const [choose, setChoose] = useState([])
   const [form] = Form.useForm()
   const [form1] = Form.useForm()
+  const [final, setFinal] = useState({})
   let history = useHistory()
   axios.defaults.withCredentials = true
 
   useEffect(() => {
     const getData = async () => {
-      axios.defaults.withCredentials = true
-      await axios
-        .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`)
-        .then((res) => {
-          setIsLoading(false)
-          setData(res.data.data)
-          console.log(data)
-        })
-        .catch(function (error) {
-          if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
-            history.push({
-              pathname: '/login',
-              state: {
-                session: true,
-              },
-            })
-          } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
-            history.push('/404')
-          } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
-            history.push('/500')
-          }
-        })
+      try {
+        axios.defaults.withCredentials = true
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`,
+        )
+
+        const finalResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form/finalization`,
+        )
+
+        setData(response.data.data)
+        console.log('ini data ', data)
+
+        const finalData = finalResponse.data.data
+        setFinal(finalData)
+        console.log('ini final', final)
+        setIsLoading(false)
+      } catch (error) {
+        if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
+          history.push({
+            pathname: '/login',
+            state: {
+              session: true,
+            },
+          })
+        } else if (error.toJSON().status >= 400 && error.toJSON().status <= 499) {
+          history.push('/404')
+        } else if (error.toJSON().status >= 500 && error.toJSON().status <= 599) {
+          history.push('/500')
+        }
+      }
     }
     getData()
   }, [history, id])
+
+  useEffect(() => {
+    console.log('ini isi final', final)
+  }, [final])
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -96,6 +110,7 @@ const ListMataKuliah = () => {
 
   const handleCancelDelete = () => {
     setIsModalDeleteVisible(false)
+    form1.resetFields()
   }
 
   // const handleInputBlur = () => {
@@ -115,6 +130,7 @@ const ListMataKuliah = () => {
         const filteredData = response.data.data.filter(
           (item) => item.id === choose.id && item.name === choose.name,
         )
+
         if (filteredData.length === 0) {
           console.log('kosong')
           console.log(filteredData)
@@ -131,6 +147,7 @@ const ListMataKuliah = () => {
             )
             .then((response) => {
               refreshData(index)
+              form1.resetFields()
               notification.success({
                 message: 'Mata kuliah berhasil dihapus',
               })
@@ -174,7 +191,7 @@ const ListMataKuliah = () => {
       dataIndex: 'name',
     },
     {
-      title: 'Jurusan',
+      title: 'Prodi',
       width: '18%',
       align: 'center',
       dataIndex: 'prodi_id',
@@ -192,49 +209,199 @@ const ListMataKuliah = () => {
       title: 'Aksi',
       dataIndex: 'action',
       align: 'center',
-      //   width: '13%',
       width: '13%',
       render: (text, record) => (
         <>
           <Row>
-            <Col span={12} style={{ textAlign: 'center' }}>
-              <Button
-                id="button-eye"
-                // htmlType="submit"
-                size="small"
-                shape="square"
-                style={{ backgroundColor: '#FBB03B' }}
-                // onClick={() => {
-                //   showModalEdit(record)
-                // }}
-                onClick={() => detailMataKuliah(record.id)}
-              >
-                <FontAwesomeIcon icon={faEye} style={{ color: 'white' }} />
-              </Button>
-            </Col>
-            <Col span={12} style={{ textAlign: 'center' }}>
-              <Button
-                id="button-trash"
-                // htmlType="submit"
-                size="small"
-                shape="square"
-                style={{ backgroundColor: '#FF0000' }}
-                // onClick={() => {
-                //   showModalDelete(record, `delete-${record.id}`)
-                // }}
-                onClick={() => {
-                  // showModalDelete(record, `delete-${record.id}`)
-                  showModalDelete(record, `delete-${record.id}`)
-                }}
-              >
-                <FontAwesomeIcon icon={faTrashCan} style={{ color: 'white' }} />
-              </Button>
-            </Col>
+            {localStorage.getItem('id_role') === '0' && (
+              <>
+                <Col span={24} style={{ textAlign: 'center' }}>
+                  <Button
+                    id="button-eye"
+                    size="small"
+                    shape="square"
+                    style={{ backgroundColor: '#FBB03B' }}
+                    onClick={() => detailMataKuliah(record.id)}
+                  >
+                    <FontAwesomeIcon icon={faEye} style={{ color: 'white' }} />
+                  </Button>
+                </Col>
+              </>
+            )}
+            {localStorage.getItem('id_role') === '3' && (
+              <>
+                <Col span={12} style={{ textAlign: 'center' }}>
+                  <Button
+                    id="button-eye"
+                    size="small"
+                    shape="square"
+                    style={{ backgroundColor: '#FBB03B' }}
+                    onClick={() => detailMataKuliah(record.id)}
+                  >
+                    <FontAwesomeIcon icon={faEye} style={{ color: 'white' }} />
+                  </Button>
+                </Col>
+
+                <Col span={12} style={{ textAlign: 'center' }}>
+                  <Button
+                    id="button-trash"
+                    size="small"
+                    shape="square"
+                    style={{ backgroundColor: '#FF0000' }}
+                    onClick={() => showModalDelete(record, `delete-${record.id}`)}
+                  >
+                    <FontAwesomeIcon icon={faTrashCan} style={{ color: 'white' }} />
+                  </Button>
+                </Col>
+              </>
+            )}
           </Row>
         </>
       ),
     },
   ]
+
+  // const idRole = localStorage.getItem('id_role')
+
+  // if (idRole === '3') {
+  //   columns.push({
+  //     title: 'Aksi',
+  //     dataIndex: 'action',
+  //     align: 'center',
+  //     width: '13%',
+  //     render: (text, record) => (
+  //       <>
+  //         <Row>
+  //           <Col span={12} style={{ textAlign: 'center' }}>
+  //             <Button
+  //               id="button-eye"
+  //               size="small"
+  //               shape="square"
+  //               style={{ backgroundColor: '#FBB03B' }}
+  //               onClick={() => detailMataKuliah(record.id)}
+  //             >
+  //               <FontAwesomeIcon icon={faEye} style={{ color: 'white' }} />
+  //             </Button>
+  //           </Col>
+  //           <Col span={12} style={{ textAlign: 'center' }}>
+  //             <Button
+  //               id="button-trash"
+  //               size="small"
+  //               shape="square"
+  //               style={{ backgroundColor: '#FF0000' }}
+  //               onClick={() => showModalDelete(record, `delete-${record.id}`)}
+  //             >
+  //               <FontAwesomeIcon icon={faTrashCan} style={{ color: 'white' }} />
+  //             </Button>
+  //           </Col>
+  //         </Row>
+  //       </>
+  //     ),
+  //   })
+  // }
+
+  const showModalFinalisasi = () => {
+    if (final.isFinalization === 0) {
+      Modal.confirm({
+        title: (
+          <div style={{ fontSize: '15px' }}>
+            Apakah anda yakin akan melakukan finalisasi seluruh mata kuliah?
+          </div>
+        ),
+        zIndex: 9999999,
+        okText: 'Ya',
+        cancelText: 'Batal',
+        okButtonProps: {
+          style: {
+            backgroundColor: 'red',
+            color: 'white',
+          },
+          className: 'custom-button',
+        },
+        onOk: () => {
+          handleOkFinalisasi()
+        },
+      })
+    } else {
+      Modal.confirm({
+        title: 'Anda telah melakukan finalisasi!',
+        // (
+        //   <div style={{ fontSize: '15px' }}>
+        //     <div>Anda telah melakukan finalisasi!</div>
+        //     <div> Tidak dapat mengubah data mata kuliah</div>
+        //   </div>
+        // ),
+        content: (
+          <div style={{ fontSize: '15px' }}>
+            {/* <div>Tidak dapat mengubah data mata kuliah</div> */}
+            <div>Apakah anda ingin membatalkan finalisasi?</div>
+          </div>
+        ),
+        zIndex: 9999999,
+        okText: 'Ya',
+        cancelText: 'Batal',
+        cancelButtonProps: {
+          style: {
+            backgroundColor: 'red',
+            color: 'white',
+          },
+          className: 'custom-button',
+        },
+        onOk: () => {
+          handleOkFinalisasi()
+        },
+      })
+    }
+  }
+
+  const handleOkFinalisasi = async () => {
+    if (final.isFinalization === 0) {
+      try {
+        // console.log('ini berhasil karena nilai final adalah', final.isFinalization)
+        await axios
+          .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form/finalization`)
+          .then((response) => {
+            notification.success({
+              message: 'Finalisasi mata kuliah berhasil',
+            })
+          })
+        const finalResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form/finalization`,
+        )
+        const finalData = finalResponse.data.data
+        // console.log('ini hasil final', finalData)
+        setFinal(finalData)
+        console.log('ini hasil final akhir ', final)
+      } catch {
+        notification.error({
+          message: 'Gagal finalisasi mata kuliah',
+        })
+      }
+    } else {
+      // console.log('hasil dari final adalah', final)
+      try {
+        // console.log('ini berhasil karena nilai final adalah', final.isFinalization)
+        await axios
+          .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form/finalization/cancel`)
+          .then((response) => {
+            notification.success({
+              message: 'Finalisasi mata kuliah dibatalkan',
+            })
+          })
+        const finalResponse = await axios.get(
+          `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form/finalization`,
+        )
+        const finalData = finalResponse.data.data
+        // console.log('ini hasil final', finalData)
+        setFinal(finalData)
+        console.log('ini hasil final akhir ', final)
+      } catch {
+        notification.error({
+          message: 'Gagal membatalkan finalisasi mata kuliah',
+        })
+      }
+    }
+  }
 
   return isLoading ? (
     <Spin indicator={antIcon} />
@@ -245,22 +412,44 @@ const ListMataKuliah = () => {
           <CRow>
             <CCol sm={12}>
               <h6>Tabel Daftar Mata Kuliah</h6>
+              <br></br>
             </CCol>
           </CRow>
-          <CRow>
-            <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="px-4"
-                id="createKriteria"
-                style={{ backgroundColor: '#339900', borderColor: '#339900' }}
-                onClick={() => tambahmatakuliah()}
-              >
-                Tambah Mata Kuliah
-              </Button>
-            </CCol>
-          </CRow>
+          {localStorage.getItem('id_role') === '3' ? (
+            <>
+              <CRow>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="px-4"
+                      id="createKriteria"
+                      style={{ backgroundColor: '#321FDB', borderColor: '#321FDB' }}
+                      onClick={showModalFinalisasi}
+                    >
+                      Finalisasi Mata Kuliah
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="px-4"
+                      id="createKriteria"
+                      style={{ backgroundColor: '#339900', borderColor: '#339900' }}
+                      onClick={() => tambahmatakuliah()}
+                    >
+                      Daftar Mata Kuliah
+                    </Button>
+                  </div>
+                </div>
+              </CRow>
+            </>
+          ) : (
+            ''
+          )}
+          <br></br>
           <Table
             scroll={{ x: 'max-content' }}
             columns={columns}

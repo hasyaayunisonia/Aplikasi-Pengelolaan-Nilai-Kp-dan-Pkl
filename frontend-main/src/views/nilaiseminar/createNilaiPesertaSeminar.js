@@ -397,7 +397,7 @@ const CreateNilaiPesertaSeminar = () => {
       console.log(inputValues2)
       const dataSeminar = {
         participant_id: peserta.nim,
-        date_seminar: selectedDate2.toISOString(),
+        date_seminar: selectedDate,
         examiner_id: selectedDosen2,
         examiner_type: examinerType2.examiner_type,
         comment: comment2,
@@ -478,7 +478,7 @@ const CreateNilaiPesertaSeminar = () => {
       console.log(inputValues3)
       const dataSeminar = {
         participant_id: peserta.nim,
-        date_seminar: selectedDate3.toISOString(),
+        date_seminar: selectedDate,
         examiner_id: selectedDosen3,
         examiner_type: examinerType3.examiner_type,
         comment: comment3,
@@ -590,6 +590,7 @@ const CreateNilaiPesertaSeminar = () => {
                                 format="DD/MM/YYYY"
                                 style={{ width: '100%' }}
                                 onChange={handleDateChange}
+                                placeholder="Pilih Tanggal"
                                 value={selectedDate}
                               />
                             </td>
@@ -710,10 +711,12 @@ const CreateNilaiPesertaSeminar = () => {
                             </td>
                             <td>
                               <DatePicker
-                                format="DD/MM/YYYY HH:mm:ss"
+                                format="DD/MM/YYYY"
                                 style={{ width: '100%' }}
-                                onChange={handleDateChange2}
-                                value={selectedDate2}
+                                // onChange={handleDateChange2}
+                                placeholder="Pilih Tanggal"
+                                value={selectedDate ? selectedDate : undefined}
+                                disabled
                               />
                             </td>
                           </tr>
@@ -833,10 +836,12 @@ const CreateNilaiPesertaSeminar = () => {
                             </td>
                             <td>
                               <DatePicker
-                                format="DD/MM/YYYY HH:mm:ss"
+                                format="DD/MM/YYYY"
                                 style={{ width: '100%' }}
-                                onChange={handleDateChange3}
-                                value={selectedDate3}
+                                // onChange={handleDateChange3}
+                                value={selectedDate ? selectedDate : undefined}
+                                placeholder="Pilih Tanggal"
+                                disabled
                               />
                             </td>
                           </tr>

@@ -9,7 +9,7 @@ const AppBreadcrumb = () => {
   const currentLocation = useLocation().pathname
 
   const getRouteName = (pathname, routes) => {
-    const length = pathname.split('/').length;
+    const length = pathname.split('/').length
     const currentRoute = routes.find((route) => route.path === pathname)
     return currentRoute ? currentRoute.name : pathname.split('/')[length - 1]
   }
@@ -19,25 +19,36 @@ const AppBreadcrumb = () => {
     location.split('/').reduce((prev, curr, index, array) => {
       const currentPathname = `${prev}/${curr}`
       breadcrumbs.push({
-        pathname: array[index] === "detailPerusahaan" || (array[index] === "detailCV") || (array[index] === "updatePerusahaan") ? `${currentPathname}/${array[array.length - 1]}` : currentPathname,
+        pathname:
+          array[index] === 'detailPerusahaan' ||
+          array[index] === 'detailCV' ||
+          array[index] === 'updatePerusahaan' ||
+          array[index] === 'penilaianSeminar'
+            ? `${currentPathname}/${array[array.length - 1]}`
+            : currentPathname,
         name: getRouteName(currentPathname, routes),
-        active: index + 1 === array.length || (
-          (array[index] === "prerequisite" || 
-            array[index] === "detailCV" || 
-            array[index] === "updateCV" ||
-            array[index] === "updatePrerequisite" || 
-            array[index] === "detailPerusahaan" || 
-            array[index] === "updatePerusahaan" || 
-            array[index] === "detailEvaluasi" || 
-            array[index] === "detailFeedback" || 
-            array[index] === "hasilEvaluasiPerusahaan" || 
-            array[index] === "dataEvaluasiPerusahaan" || 
-            array[index] === "detailEvaluasiPerusahaan" || 
-            array[index] === "formulirEvaluasiPerusahaan" ||
-            array[index] === "detailFeedbackPerusahaan" ||
-            array[index] === "formulirFeedbackPerusahaan") 
-            && index === array.length - 2
-          ) || (array[index] === "detailPerusahaan" && index === array.length - 3) ? true : false,
+        active:
+          index + 1 === array.length ||
+          ((array[index] === 'prerequisite' ||
+            array[index] === 'detailCV' ||
+            array[index] === 'updateCV' ||
+            array[index] === 'updatePrerequisite' ||
+            array[index] === 'detailPerusahaan' ||
+            array[index] === 'updatePerusahaan' ||
+            array[index] === 'detailEvaluasi' ||
+            array[index] === 'detailFeedback' ||
+            array[index] === 'hasilEvaluasiPerusahaan' ||
+            array[index] === 'dataEvaluasiPerusahaan' ||
+            array[index] === 'detailEvaluasiPerusahaan' ||
+            array[index] === 'formulirEvaluasiPerusahaan' ||
+            array[index] === 'detailFeedbackPerusahaan' ||
+            array[index] === 'penilaianSeminar' ||
+            array[index] === 'tambahNilaiPeserta' ||
+            array[index] === 'formulirFeedbackPerusahaan') &&
+            index === array.length - 2) ||
+          (array[index] === 'detailPerusahaan' && index === array.length - 3)
+            ? true
+            : false,
       })
       return currentPathname
     })

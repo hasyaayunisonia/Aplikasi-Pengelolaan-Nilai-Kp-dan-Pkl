@@ -40,6 +40,7 @@ const IdentitasMataKuliah = () => {
 
   useEffect(() => {
     if (!id) {
+      console.log('keluar')
       history.push('/')
     } else {
       const getMataKuliah = async () => {
@@ -143,27 +144,27 @@ const IdentitasMataKuliah = () => {
   }, [])
 
   useEffect(() => {
-    console.log('ini data eas p ', dataEasPraktek)
+    // console.log('ini data eas p ', dataEasPraktek)
   }, [dataEasPraktek])
 
   useEffect(() => {
-    console.log('ini data eas t ', dataEasTeori)
+    // console.log('ini data eas t ', dataEasTeori)
   }, [dataEasTeori])
 
   useEffect(() => {
-    console.log('ini data ets t ', dataEtsTeori)
+    // console.log('ini data ets t ', dataEtsTeori)
   }, [dataEtsTeori])
 
   useEffect(() => {
-    console.log('ini data ets p ', dataEtsPraktek)
+    // console.log('ini data ets p ', dataEtsPraktek)
   }, [dataEtsPraktek])
 
   useEffect(() => {
-    console.log('ini data ets p ', dataLainLainTeori)
+    // console.log('ini data ets p ', dataLainLainTeori)
   }, [dataLainLainTeori])
 
   useEffect(() => {
-    console.log('ini data ets p ', dataLainLainPraktek)
+    // console.log('ini data ets p ', dataLainLainPraktek)
   }, [dataLainLainPraktek])
 
   const columns = [
@@ -260,11 +261,24 @@ const IdentitasMataKuliah = () => {
         {
           title: 'Bobot',
           dataIndex: 'bobot_criteria',
+          render: (value, item) => {
+            if (item.is_average === 1) {
+              return null // Mengembalikan null jika is_average adalah 1, sehingga kolom tidak ditampilkan
+            }
+            return value // Menampilkan nilai bobot_criteria jika is_average bukan 1
+          },
         },
       ],
     },
   ]
 
+  // if (dataEtsTeori.some((item) => item.is_selected === 0)) {
+  //   // Kolom "Bobot" akan ditampilkan jika tidak ada item dengan is_selected = 1
+  //   columns3[0].children.push({
+  //     title: 'Bobot',
+  //     dataIndex: 'bobot_criteria',
+  //   })
+  // }
   const columns4 = [
     {
       title: 'Komponen Kriteria Penilaian ETS Praktek',
@@ -364,8 +378,9 @@ const IdentitasMataKuliah = () => {
     },
   ]
 
-  const updateMataKuliah = () => {
-    history.push(`/matakuliah/listmatakuliah/ubahmatakuliah/${id}`)
+  const updateMataKuliah = (id) => {
+    console.log('ini id ', id)
+    history.push(`/mataKuliah/listMatakuliah/ubahMatakuliah/${id}`)
   }
 
   const listmatakuliah = () => {
@@ -425,19 +440,24 @@ const IdentitasMataKuliah = () => {
     <Spin indicator={antIcon} />
   ) : (
     <>
-      <CRow>
-        <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
-          <Button
-            id="update"
-            shape="round"
-            style={{ color: 'black', background: '#FCEE21' }}
-            onClick={() => updateMataKuliah()}
-          >
-            <FontAwesomeIcon icon={faPencil} style={{ paddingRight: '5px' }} /> Ubah Data Mata
-            Kuliah
-          </Button>
-        </CCol>
-      </CRow>
+      {localStorage.getItem('id_role') === '3' && (
+        <>
+          <CRow>
+            <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
+              <Button
+                id="update"
+                shape="round"
+                style={{ color: 'black', background: '#FCEE21' }}
+                onClick={() => updateMataKuliah(id)}
+              >
+                <FontAwesomeIcon icon={faPencil} style={{ paddingRight: '5px' }} /> Ubah Data Mata
+                Kuliah
+              </Button>
+            </CCol>
+          </CRow>
+        </>
+      )}
+
       <CCard className="mb-4">
         <CCardHeader style={{ paddingLeft: '20px' }}>
           <h5>
@@ -505,20 +525,24 @@ const IdentitasMataKuliah = () => {
               </CRow>
             </CCol>
           </CRow>
-          <CRow>
-            <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
-              <Button
-                id="hapus"
-                shape="round"
-                style={{ color: 'white', background: '#FF0000' }}
-                onClick={() => {
-                  showModalDelete()
-                }}
-              >
-                Hapus
-              </Button>
-            </CCol>
-          </CRow>
+          {localStorage.getItem('id_role') === '3' && (
+            <>
+              <CRow>
+                <CCol style={{ textAlign: 'right', paddingBottom: '15px' }}>
+                  <Button
+                    id="hapus"
+                    shape="round"
+                    style={{ color: 'white', background: '#FF0000' }}
+                    onClick={() => {
+                      showModalDelete()
+                    }}
+                  >
+                    Hapus
+                  </Button>
+                </CCol>
+              </CRow>
+            </>
+          )}
         </CCardBody>
       </CCard>
       <CCard className="mb-4">

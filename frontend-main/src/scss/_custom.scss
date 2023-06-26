@@ -19,7 +19,7 @@ a:hover {
   z-index: -2;
 }
 
-.sidebar-backdrop.fade.show{
+.sidebar-backdrop.fade.show {
   z-index: 999;
 }
 
@@ -27,102 +27,101 @@ a:hover {
   z-index: 2 !important;
 }
 
-
 Button#button-lock.ant-btn.ant-btn-circle:hover {
-  background-color: #D18E24 !important
+  background-color: #d18e24 !important;
 }
 
 Button#button-eye.ant-btn.ant-btn-circle:hover {
-  background-color: #D18E24 !important
+  background-color: #d18e24 !important;
 }
 
 Button#download.ant-btn.ant-btn-circle:hover {
-  background-color: #294F75 !important
+  background-color: #294f75 !important;
 }
 
 Button#button-pencil.ant-btn.ant-btn-circle:hover {
-  background-color: #BBB11A !important
+  background-color: #bbb11a !important;
 }
 
 Button#notifikasi.ant-btn.ant-btn-circle:hover {
-  background-color: #D18E24 !important
+  background-color: #d18e24 !important;
 }
 
 Button#button-trash.ant-btn.ant-btn-circle:hover {
-  background-color: #900427 !important
+  background-color: #900427 !important;
 }
 
 Button#button-download.ant-btn.ant-btn-circle:hover {
-  background-color: #294F75 !important
+  background-color: #294f75 !important;
 }
 
 Button#create-akun.ant-btn.ant-btn-round:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#create-kriteria.ant-btn.ant-btn-round:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#create-aspek.ant-btn.ant-btn-round:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#create-evaluasi.ant-btn.ant-btn-round:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#generate.ant-btn.ant-btn-primary:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#selesai.ant-btn.ant-btn-round.ant-btn-default.ant-btn-sm:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#batal.ant-btn.ant-btn-round.ant-btn-default.ant-btn-sm:hover {
-  background-color: #900427 !important
+  background-color: #900427 !important;
 }
 
 Button#accept.ant-btn.ant-btn-round.ant-btn-default:hover {
-  background-color: #236A00 !important
+  background-color: #236a00 !important;
 }
 
 Button#decline.ant-btn.ant-btn-round.ant-btn-default:hover {
-  background-color: #900427 !important
+  background-color: #900427 !important;
 }
 
 Button#detail.ant-btn.ant-btn-round.ant-btn-default.ant-btn-sm:hover {
-  background-color: #D18E24 !important
+  background-color: #d18e24 !important;
 }
 
 Button#update.ant-btn.ant-btn-round.ant-btn-default.ant-btn-sm:hover {
-  background-color: #BBB11A !important
+  background-color: #bbb11a !important;
 }
 
 Button#download.ant-btn.ant-btn-round.ant-btn-default.ant-btn-sm:hover {
-  background-color: #294F75 !important
+  background-color: #294f75 !important;
 }
 
 Button#finalisasi.ant-btn.ant-btn-primary:hover {
-  background-color: #005B4B !important
+  background-color: #005b4b !important;
 }
 
 Button#publish.ant-btn.ant-btn-primary:hover {
-  background-color: #BBB11A !important
+  background-color: #bbb11a !important;
 }
 
 Button#batalFinalisasi.ant-btn.ant-btn-primary:hover {
-  background-color: #900427 !important
+  background-color: #900427 !important;
 }
 
 div#card-filter.card.mb-4:hover {
-  background-color: #C8C8C8 !important;
+  background-color: #c8c8c8 !important;
   cursor: pointer;
 }
 
 Button#button-submit.ant-btn.ant-btn-round.ant-btn-default:hover {
-  background-color: #294F75 !important
+  background-color: #294f75 !important;
 }
 
 .ant-picker-dropdown {
@@ -139,12 +138,12 @@ Button#button-submit.ant-btn.ant-btn-round.ant-btn-default:hover {
 }
 
 /* row data */
-.ant-table-tbody>tr>td {
+.ant-table-tbody > tr > td {
   height: 5px;
   padding: 4px !important;
 }
 
-.ant-table-thead>tr>th {
+.ant-table-thead > tr > th {
   height: 5px;
   padding: 4px;
 }
@@ -163,7 +162,7 @@ span.ant-select-selection-item {
   border: 1px solid #ccc;
 }
 .editor-class {
-  background-color:rgb(238, 235, 235);
+  background-color: rgb(238, 235, 235);
   padding: 1rem;
   border: 1px solid #eee;
 }
@@ -174,4 +173,20 @@ span.ant-select-selection-item {
 .anticon.anticon-check.ant-steps-finish-icon,
 svg {
   vertical-align: -1px !important;
+}
+
+//dropdown buat kriteria
+.dropdown-style .ant-select-dropdown {
+  max-height: 200px; /* Atur tinggi maksimum dropdown */
+  overflow-y: auto; /* Tampilkan scrollbar jika konten dropdown melebihi tinggi maksimum */
+}
+
+//input
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }
