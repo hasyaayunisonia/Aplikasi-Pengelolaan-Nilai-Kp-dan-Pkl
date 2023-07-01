@@ -117,6 +117,10 @@ const RekapitulasiNilaiSeminar = lazyWithRetry(() =>
 )
 //Nilai Industri
 const ListNilaiIndustri = lazyWithRetry(() => import('./views/nilaiindustri/listNilaiIndustri'))
+const NilaiIndustri = lazyWithRetry(() => import('./views/nilaiindustri/nilaiIndustriById'))
+
+//Test Kafka
+const Kafka = lazyWithRetry(() => import('./views/kafka/ListKafka'))
 
 const routes = [
   // Page
@@ -184,7 +188,11 @@ const routes = [
     component: RekapitulasiNilaiSeminar,
   },
   // *************** Nilai Industri ***************
-  { path: '/nilaiindustri', name: 'Nilai Industri', component: ListNilaiIndustri, exact: true },
+  { path: '/nilaiIndustri', name: 'Nilai Industri', component: ListNilaiIndustri, exact: true },
+  { path: '/nilaiIndustri/:id', name: ':id', component: NilaiIndustri},
+
+  // *************** Kafka ***************
+  { path: '/kafka', name: 'Test Kafka', component: Kafka, exact: true },
 
   // Pemetaan
   { path: '/hasilPemetaan', name: 'Hasil Pemetaan', component: HasilPemetaan, exact: true },

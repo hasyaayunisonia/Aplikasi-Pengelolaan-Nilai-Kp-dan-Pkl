@@ -190,3 +190,21 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
+
+.my-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.my-table th, .my-table td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}
+.my-table tbody tr:nth-child(odd) {
+  background-color: #b1b0b031;
+}
+
+.my-table tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}

@@ -19,6 +19,7 @@ import {
   faBook,
   faPersonChalkboard,
   faIndustry,
+  faFileLines,
 } from '@fortawesome/free-solid-svg-icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -95,6 +96,34 @@ const _nav = [
     role: '0',
     index: 22,
     icon: <FontAwesomeIcon icon={faIndustry} size="lg" />,
+    // items: [
+    //   {
+    //     component: CNavItem,
+    //     index: 21.1,
+    //     name: 'Kelola Kriteria',
+    //     // to: '/nilaiseminar/kelolakriteria',
+    //   },
+    //   {
+    //     component: CNavItem,
+    //     index: 21.2,
+    //     name: 'Penilaian Seminar',
+    //     // to: '/nilaiseminar/penilaianseminar',
+    //   },
+    //   {
+    //     component: CNavItem,
+    //     index: 21.3,
+    //     name: 'Rekap Nilai Seminar',
+    //     // to: '/nilaiseminar/rekapitulasinilaiseminar',
+    //   },
+    // ],
+  },
+  {
+    component: CNavItem,
+    name: 'Test Kafka',
+    to: '/kafka',
+    role: '0',
+    index: 22,
+    icon: <FontAwesomeIcon icon={faFileLines} size="lg" />,
     // items: [
     //   {
     //     component: CNavItem,
