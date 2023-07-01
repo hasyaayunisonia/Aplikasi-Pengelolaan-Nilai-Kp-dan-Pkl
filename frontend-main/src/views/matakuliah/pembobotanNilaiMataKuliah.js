@@ -474,7 +474,7 @@ const PembobotanMataKuliah = () => {
       title: 'Bobot Kriteria',
       content: (
         <>
-          <PembobotanKriteriaMataKuliah />
+          <PembobotanKriteriaMataKuliah current={current} setCurrent={setCurrent} />
         </>
       ),
     },
@@ -495,7 +495,7 @@ const PembobotanMataKuliah = () => {
         <CCardBody>
           {steps[current].content}
           <div className="steps-action mt-2">
-            {current > 0 && (
+            {/* {current > 0 && (
               <>
                 <Button
                   type="primary"
@@ -521,7 +521,7 @@ const PembobotanMataKuliah = () => {
                   Simpan
                 </Button>
               </>
-            )}
+            )} */}
             {current < steps.length - 1 && (
               <>
                 {current === 0 && (
@@ -547,7 +547,8 @@ const PembobotanMataKuliah = () => {
                   // type="primary"
                   style={{
                     color: 'white',
-                    background: '#1677ff',
+                    // background: '#1677ff',
+                    background: '#808080',
                   }}
                   onClick={() => {
                     next(countBobot())
