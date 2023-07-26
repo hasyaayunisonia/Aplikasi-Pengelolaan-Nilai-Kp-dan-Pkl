@@ -430,6 +430,7 @@ const RekapitulasiNilaiSeminar = () => {
                       dataSource={modifiedDataArray}
                       rowKey="id"
                       bordered
+                      pagination={false}
                     />
 
                     <br></br>
@@ -456,6 +457,7 @@ const RekapitulasiNilaiSeminar = () => {
                       dataSource={modifiedDataArray2}
                       rowKey="id"
                       bordered
+                      pagination={false}
                     />
 
                     <br></br>
@@ -483,6 +485,7 @@ const RekapitulasiNilaiSeminar = () => {
                       dataSource={modifiedDataArray3}
                       rowKey="id"
                       bordered
+                      pagination={false}
                     />
 
                     <br></br>
@@ -510,6 +513,7 @@ const RekapitulasiNilaiSeminar = () => {
                       dataSource={modifiedDataArray4}
                       rowKey="id"
                       bordered
+                      pagination={false}
                     />
                   </TabPane>
                 )}

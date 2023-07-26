@@ -87,7 +87,7 @@ const RekapitulasiMataKuliah = () => {
             prodiId: dataSeminar.prodiId,
             year: dataSeminar.year,
           },
-          timeout: 60000, // Mengatur timeout eksekusi menjadi 60 detik (misalnya)
+          timeout: 3000000, // Mengatur timeout eksekusi menjadi 60 detik (misalnya)
         },
       )
 
@@ -288,6 +288,7 @@ const RekapitulasiMataKuliah = () => {
         dataSource={dataTabel}
         rowKey="id"
         bordered
+        pagination={false}
       />
     </TabPane>
   ))

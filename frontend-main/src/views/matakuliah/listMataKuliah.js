@@ -425,10 +425,15 @@ const ListMataKuliah = () => {
                       htmlType="submit"
                       className="px-4"
                       id="createKriteria"
-                      style={{ backgroundColor: '#321FDB', borderColor: '#321FDB' }}
+                      style={{
+                        backgroundColor: final.isFinalization === 0 ? '#321FDB' : '#FF0000',
+                        // borderColor: '#321FDB',
+                      }}
                       onClick={showModalFinalisasi}
                     >
-                      Finalisasi Mata Kuliah
+                      {final.isFinalization === 0
+                        ? 'Finalisasi Mata Kuliah'
+                        : 'Batalkan Finalisasi Mata Kuliah'}
                     </Button>
                   </div>
                   <div>

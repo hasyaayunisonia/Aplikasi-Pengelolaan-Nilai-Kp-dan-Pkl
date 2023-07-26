@@ -88,8 +88,6 @@ const PembobotanMataKuliah = () => {
 
   useEffect(() => {
     async function getDataBobot() {
-      setIsLoading(false)
-      setIsSpinner(false)
       await axios
         .get(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`)
         .then((res) => {
@@ -107,6 +105,8 @@ const PembobotanMataKuliah = () => {
             idLainPraktek: res.data.data[4].id,
             idLainTeori: res.data.data[5].id,
           })
+          setIsLoading(false)
+          setIsSpinner(false)
         })
         .catch(function (error) {
           if (error.toJSON().status >= 300 && error.toJSON().status <= 399) {
@@ -232,7 +232,7 @@ const PembobotanMataKuliah = () => {
         })
     } else {
       notification.error({
-        message: 'Jumlah semua bobot harus 100',
+        message: 'Jumlah semua bobot harus 100%',
       })
     }
   }
@@ -433,15 +433,15 @@ const PembobotanMataKuliah = () => {
                 <Row style={{ paddingLeft: '30px', paddingRight: '30px' }}>
                   {/* span nya 6 */}
                   <Col span={18} style={{ textAlign: 'left' }}>
-                    Jumlah bobot komponen saat ini: {countBobot() === 0 ? 0 : countBobot()}
+                    Jumlah bobot komponen saat ini: {countBobot() === 0 ? '0%' : countBobot() + '%'}
                     {countBobot() > 100 && (
                       <span style={{ color: 'red' }}>
-                        <sup>* Jumlah bobot melebihi batas maksimum 100</sup>
+                        <sup>* Jumlah bobot melebihi batas maksimum 100%</sup>
                       </span>
                     )}
                     {countBobot() < 100 && (
                       <span style={{ color: 'red' }}>
-                        <sup>* Jumlah bobot kurang dari 100</sup>
+                        <sup>* Jumlah bobot kurang dari 100%</sup>
                       </span>
                     )}
                   </Col>
@@ -480,9 +480,7 @@ const PembobotanMataKuliah = () => {
     },
   ]
 
-  return isSpinner ? (
-    <Spin indicator={antIcon} />
-  ) : isLoading ? (
+  return isLoading ? (
     <Spin indicator={antIcon} />
   ) : (
     <>

@@ -421,6 +421,7 @@ const KelolaKriteriaSeminar = () => {
               dataSource={listKriteria}
               rowKey="id"
               bordered
+              pagination={false}
             />
           </Form>
           <CRow>

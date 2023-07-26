@@ -131,7 +131,7 @@ const UbahMataKuliah = () => {
 
       console.log(prodi)
       await axios
-        .post(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form`, {
+        .put(`${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/form/update/${id}`, {
           prodi_id: prodi,
           kode: data.kode,
           name: data.name,
@@ -260,12 +260,7 @@ const UbahMataKuliah = () => {
                 <b>Tahun Ajaran</b>
                 <Row>
                   <Col span={5}>
-                    <Form.Item
-                      name="tahunajaranStart"
-                      rules={[
-                        { required: true, message: 'Tahun ajaran mulai tidak boleh kosong!' },
-                      ]}
-                    >
+                    <Form.Item name="tahunajaranStart">
                       <DatePicker
                         picker="year"
                         // style={{ width: '31%', minWidth: '30%' }}
@@ -277,12 +272,7 @@ const UbahMataKuliah = () => {
                     </Form.Item>
                   </Col>
                   <Col span={5}>
-                    <Form.Item
-                      name="tahunajaranEnd"
-                      rules={[
-                        { required: true, message: 'Tahun ajaran selesai tidak boleh kosong!' },
-                      ]}
-                    >
+                    <Form.Item name="tahunajaranEnd">
                       <DatePicker
                         picker="year"
                         // style={{ width: '31%', minWidth: '30%' }}

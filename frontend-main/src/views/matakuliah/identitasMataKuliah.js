@@ -21,9 +21,10 @@ import axios from 'axios'
 import { LoadingOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 const antIcon = <LoadingOutlined style={{ fontSize: 40 }} spin />
-const IdentitasMataKuliah = () => {
+const IdentitasMataKuliah = (props) => {
   let history = useHistory()
   const [isLoading, setIsLoading] = useState(true)
   const [isModalDeleteVisible, setIsModalDeleteVisible] = useState(false)
@@ -37,6 +38,9 @@ const IdentitasMataKuliah = () => {
   const [dataEtsPraktek, setDataEtsPraktek] = useState({})
   const [dataLainLainTeori, setDataLainLainTeori] = useState({})
   const [dataLainLainPraktek, setDataLainLainPraktek] = useState({})
+  const [bobot, setBobot] = useState({})
+  const [avg, setAvg] = useState({})
+  const { namaProp } = props
 
   useEffect(() => {
     if (!id) {
@@ -53,6 +57,38 @@ const IdentitasMataKuliah = () => {
           setMatkul(filteredData)
           console.log(matkul)
 
+          //set bobot komponen
+          const res = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/course-form/${id}`,
+          )
+
+          setBobot({
+            UasPraktek: res.data.data[0].bobot_component,
+            UasTeori: res.data.data[1].bobot_component,
+            UtsPraktek: res.data.data[2].bobot_component,
+            UtsTeori: res.data.data[3].bobot_component,
+            LainPraktek: res.data.data[4].bobot_component,
+            LainTeori: res.data.data[5].bobot_component,
+            idUasPraktek: res.data.data[0].id,
+            idUasTeori: res.data.data[1].id,
+            idUtsPraktek: res.data.data[2].id,
+            idUtsTeori: res.data.data[3].id,
+            idLainPraktek: res.data.data[4].id,
+          })
+
+          console.log('ini bobot ', bobot)
+
+          const average = await axios.get(
+            `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
+          )
+          setAvg({
+            UasPraktek_avg: average.data.data[0].is_average,
+            UasTeori_avg: average.data.data[1].is_average,
+            UtsPraktek_avg: average.data.data[2].is_average,
+            UtsTeori_avg: average.data.data[3].is_average,
+            LainPraktek_avg: average.data.data[4].is_average,
+            LainTeori_avg: average.data.data[5].is_average,
+          })
           //ETS T
           const komponenEtsTeori = await axios.get(
             `${process.env.REACT_APP_API_GATEWAY_URL}grade/courses/component/criteria/form/${id}`,
@@ -120,6 +156,7 @@ const IdentitasMataKuliah = () => {
           setDataLainLainPraktek(filteredDataLainLainPraktek.criteria_data)
 
           setIsLoading(false)
+          console.log(id)
         } catch (error) {
           if (error.response) {
             const status = error.response.status
@@ -141,10 +178,10 @@ const IdentitasMataKuliah = () => {
 
       getMataKuliah()
     }
-  }, [])
+  }, [id])
 
   useEffect(() => {
-    // console.log('ini data eas p ', dataEasPraktek)
+    console.log('ini data eas p ', dataEasPraktek)
   }, [dataEasPraktek])
 
   useEffect(() => {
@@ -167,7 +204,44 @@ const IdentitasMataKuliah = () => {
     // console.log('ini data ets p ', dataLainLainPraktek)
   }, [dataLainLainPraktek])
 
+  useEffect(() => {
+    console.log('ini data bobot ', bobot)
+  }, [bobot])
+
+  useEffect(() => {
+    console.log('ini data average ', avg)
+  }, [avg])
+
   const columns = [
+    {
+      title: 'Komponen Kriteria Penilaian EAS Praktek',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+      ],
+    },
+  ]
+
+  const columns_avg = [
     {
       title: 'Komponen Kriteria Penilaian EAS Praktek',
       children: [
@@ -225,6 +299,35 @@ const IdentitasMataKuliah = () => {
           title: 'Aspek Penilaian',
           dataIndex: 'aspect_name',
         },
+      ],
+    },
+  ]
+
+  const columns2_avg = [
+    {
+      title: 'Komponen Kriteria Penilaian EAS Teori',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
         {
           title: 'Bobot',
           dataIndex: 'bobot_criteria',
@@ -258,20 +361,42 @@ const IdentitasMataKuliah = () => {
           title: 'Aspek Penilaian',
           dataIndex: 'aspect_name',
         },
-        {
-          title: 'Bobot',
-          dataIndex: 'bobot_criteria',
-          render: (value, item) => {
-            if (item.is_average === 1) {
-              return null // Mengembalikan null jika is_average adalah 1, sehingga kolom tidak ditampilkan
-            }
-            return value // Menampilkan nilai bobot_criteria jika is_average bukan 1
-          },
-        },
       ],
     },
   ]
 
+  const columns3_avg = [
+    {
+      title: 'Komponen Kriteria Penilaian ETS Teori',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+        {
+          title: 'Bobot',
+          dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
   // if (dataEtsTeori.some((item) => item.is_selected === 0)) {
   //   // Kolom "Bobot" akan ditampilkan jika tidak ada item dengan is_selected = 1
   //   columns3[0].children.push({
@@ -280,6 +405,34 @@ const IdentitasMataKuliah = () => {
   //   })
   // }
   const columns4 = [
+    {
+      title: 'Komponen Kriteria Penilaian ETS Praktek',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
+      ],
+    },
+  ]
+  const columns4_avg = [
     {
       title: 'Komponen Kriteria Penilaian ETS Praktek',
       children: [
@@ -337,9 +490,67 @@ const IdentitasMataKuliah = () => {
           title: 'Aspek Penilaian',
           dataIndex: 'aspect_name',
         },
+      ],
+    },
+  ]
+
+  const columns5_avg = [
+    {
+      title: 'Komponen Kriteria Penilaian Lain-Lain Teori',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
+        },
         {
           title: 'Bobot',
           dataIndex: 'bobot_criteria',
+        },
+      ],
+    },
+  ]
+
+  const columns6_avg = [
+    {
+      title: 'Komponen Kriteria Penilaian Lain-Lain Praktek',
+      children: [
+        {
+          title: 'No',
+          dataIndex: 'no',
+          width: '5%',
+          align: 'center',
+          render: (value, item, index) => {
+            return index + 1
+          },
+        },
+        {
+          title: 'Evaluasi Form Penilaian',
+          dataIndex: 'name_form',
+        },
+        {
+          title: 'Evaluasi Penilaian',
+          dataIndex: 'type_form',
+        },
+        {
+          title: 'Aspek Penilaian',
+          dataIndex: 'aspect_name',
         },
       ],
     },
@@ -550,13 +761,28 @@ const IdentitasMataKuliah = () => {
           <h8>
             <b>Tabel Komponen Kriteria Penilaian ETS Teori</b>
           </h8>
-          <Table
-            scroll={{ x: 'max-content' }}
-            columns={columns3}
-            dataSource={dataEtsTeori}
-            rowKey="id"
-            bordered
-          />
+          <br></br>
+          <h10>Bobot Komponen ETS Teori : {bobot.UtsTeori ? bobot.UtsTeori : '0'}%</h10>
+          <br></br>
+          {avg.UtsTeori_avg === 0 ? (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns3}
+              dataSource={dataEtsTeori}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns3_avg}
+              dataSource={dataEtsTeori}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          )}
         </CCardBody>
       </CCard>
       <CCard className="mb-4">
@@ -564,13 +790,28 @@ const IdentitasMataKuliah = () => {
           <h8>
             <b>Tabel Komponen Kriteria Penilaian ETS Praktek</b>
           </h8>
-          <Table
-            scroll={{ x: 'max-content' }}
-            columns={columns4}
-            dataSource={dataEtsPraktek}
-            rowKey="id"
-            bordered
-          />
+          <br></br>
+          <h10>Bobot Komponen ETS Praktek : {bobot.UtsPraktek ? bobot.UtsPraktek : '0'}%</h10>
+          <br></br>
+          {avg.UtsPraktek_avg === 0 ? (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns4}
+              dataSource={dataEtsPraktek}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns4_avg}
+              dataSource={dataEtsPraktek}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          )}
         </CCardBody>
       </CCard>
       <CCard className="mb-4">
@@ -578,13 +819,28 @@ const IdentitasMataKuliah = () => {
           <h8>
             <b>Tabel Komponen Kriteria Penilaian EAS Teori</b>
           </h8>
-          <Table
-            scroll={{ x: 'max-content' }}
-            columns={columns2}
-            dataSource={dataEasTeori}
-            rowKey="id"
-            bordered
-          />
+          <br></br>
+          <h10>Bobot Komponen EAS Teori : {bobot.UasTeori ? bobot.UasTeori : '0'}%</h10>
+          <br></br>
+          {avg.UasTeori_avg === 0 ? (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns2}
+              dataSource={dataEasTeori}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns2_avg}
+              dataSource={dataEasTeori}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          )}
         </CCardBody>
       </CCard>
       <CCard className="mb-4">
@@ -592,13 +848,28 @@ const IdentitasMataKuliah = () => {
           <h8>
             <b>Tabel Komponen Kriteria Penilaian EAS Praktek</b>
           </h8>
-          <Table
-            scroll={{ x: 'max-content' }}
-            columns={columns}
-            dataSource={dataEasPraktek}
-            rowKey="id"
-            bordered
-          />
+          <br></br>
+          <h10>Bobot Komponen EAS Praktek : {bobot.UasPraktek ? bobot.UasPraktek : '0'}%</h10>
+          <br></br>
+          {avg.UasPraktek_avg === 0 ? (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns}
+              dataSource={dataEasPraktek}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns_avg}
+              dataSource={dataEasPraktek}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          )}
         </CCardBody>
       </CCard>
       <CCard className="mb-4">
@@ -606,13 +877,28 @@ const IdentitasMataKuliah = () => {
           <h8>
             <b>Tabel Komponen Kriteria Penilaian Lain-Lain Teori</b>
           </h8>
-          <Table
-            scroll={{ x: 'max-content' }}
-            columns={columns5}
-            dataSource={dataLainLainTeori}
-            rowKey="id"
-            bordered
-          />
+          <br></br>
+          <h10>Bobot Komponen Lain-Lain Teori : {bobot.LainTeori ? bobot.LainTeori : '0'}%</h10>
+          <br></br>
+          {avg.LainTeori_avg === 0 ? (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns5}
+              dataSource={dataLainLainTeori}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns5_avg}
+              dataSource={dataLainLainTeori}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          )}
         </CCardBody>
       </CCard>
       <CCard className="mb-4">
@@ -620,13 +906,30 @@ const IdentitasMataKuliah = () => {
           <h8>
             <b>Tabel Komponen Kriteria Penilaian Lain-Lain Praktek</b>
           </h8>
-          <Table
-            scroll={{ x: 'max-content' }}
-            columns={columns6}
-            dataSource={dataLainLainPraktek}
-            rowKey="id"
-            bordered
-          />
+          <br></br>
+          <h10>
+            Bobot Komponen Lain-Lain Praktek : {bobot.LainPraktek ? bobot.LainPraktek : '0'}%
+          </h10>
+          <br></br>
+          {avg.LainPraktek_avg === 0 ? (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns6_avg}
+              dataSource={dataLainLainPraktek}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Table
+              scroll={{ x: 'max-content' }}
+              columns={columns6}
+              dataSource={dataLainLainPraktek}
+              rowKey="id"
+              bordered
+              pagination={false}
+            />
+          )}
         </CCardBody>
       </CCard>
 
@@ -680,5 +983,10 @@ const IdentitasMataKuliah = () => {
       </Modal>
     </>
   )
+}
+
+IdentitasMataKuliah.propTypes = {
+  namaProp: PropTypes.string.isRequired,
+  // Other prop validations
 }
 export default IdentitasMataKuliah

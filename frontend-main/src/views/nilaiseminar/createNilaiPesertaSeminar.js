@@ -625,6 +625,7 @@ const CreateNilaiPesertaSeminar = () => {
                           dataSource={listKriteria}
                           rowKey="id"
                           bordered
+                          pagination={false}
                         />
                       </CCol>
                     </CRow>
@@ -750,6 +751,7 @@ const CreateNilaiPesertaSeminar = () => {
                           dataSource={listKriteria}
                           rowKey="id"
                           bordered
+                          pagination={false}
                         />
                       </CCol>
                     </CRow>
@@ -875,6 +877,7 @@ const CreateNilaiPesertaSeminar = () => {
                           dataSource={listKriteria}
                           rowKey="id"
                           bordered
+                          pagination={false}
                         />
                       </CCol>
                     </CRow>

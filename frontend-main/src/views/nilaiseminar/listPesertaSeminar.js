@@ -219,10 +219,15 @@ const ListPesertaSeminar = () => {
                   htmlType="submit"
                   className="px-4"
                   id="createKriteria"
-                  style={{ backgroundColor: '#321FDB', borderColor: '321FDB' }}
+                  style={{
+                    backgroundColor: final.isFinalization === 0 ? '#321FDB' : '#FF0000',
+                    // borderColor: '#321FDB',
+                  }}
                   onClick={showModalFinalisasi}
                 >
-                  Finalisasi Nilai Seminar
+                  {final.isFinalization === 0
+                    ? 'Finalisasi Nilai Seminar'
+                    : 'Batalkan Finalisasi Nilai Seminar'}
                 </Button>
               </CCol>
             )}
