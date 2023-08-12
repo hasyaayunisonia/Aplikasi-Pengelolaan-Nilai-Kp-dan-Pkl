@@ -155,6 +155,8 @@ const IdentitasMataKuliah = (props) => {
 
           setDataLainLainPraktek(filteredDataLainLainPraktek.criteria_data)
 
+          console.log("ini filteredDataLainLainPraktek")
+
           setIsLoading(false)
           console.log(id)
         } catch (error) {
@@ -764,7 +766,7 @@ const IdentitasMataKuliah = (props) => {
           <br></br>
           <h10>Bobot Komponen ETS Teori : {bobot.UtsTeori ? bobot.UtsTeori : '0'}%</h10>
           <br></br>
-          {avg.UtsTeori_avg === 0 ? (
+          {avg.UtsTeori_avg === 1 ? (
             <Table
               scroll={{ x: 'max-content' }}
               columns={columns3}
@@ -793,7 +795,7 @@ const IdentitasMataKuliah = (props) => {
           <br></br>
           <h10>Bobot Komponen ETS Praktek : {bobot.UtsPraktek ? bobot.UtsPraktek : '0'}%</h10>
           <br></br>
-          {avg.UtsPraktek_avg === 0 ? (
+          {avg.UtsPraktek_avg === 1 ? (
             <Table
               scroll={{ x: 'max-content' }}
               columns={columns4}
@@ -822,7 +824,7 @@ const IdentitasMataKuliah = (props) => {
           <br></br>
           <h10>Bobot Komponen EAS Teori : {bobot.UasTeori ? bobot.UasTeori : '0'}%</h10>
           <br></br>
-          {avg.UasTeori_avg === 0 ? (
+          {avg.UasTeori_avg === 1 ? (
             <Table
               scroll={{ x: 'max-content' }}
               columns={columns2}
@@ -851,7 +853,7 @@ const IdentitasMataKuliah = (props) => {
           <br></br>
           <h10>Bobot Komponen EAS Praktek : {bobot.UasPraktek ? bobot.UasPraktek : '0'}%</h10>
           <br></br>
-          {avg.UasPraktek_avg === 0 ? (
+          {avg.UasPraktek_avg === 1 ? (
             <Table
               scroll={{ x: 'max-content' }}
               columns={columns}
@@ -880,7 +882,7 @@ const IdentitasMataKuliah = (props) => {
           <br></br>
           <h10>Bobot Komponen Lain-Lain Teori : {bobot.LainTeori ? bobot.LainTeori : '0'}%</h10>
           <br></br>
-          {avg.LainTeori_avg === 0 ? (
+          {avg.LainTeori_avg === 1 ? (
             <Table
               scroll={{ x: 'max-content' }}
               columns={columns5}
@@ -911,7 +913,7 @@ const IdentitasMataKuliah = (props) => {
             Bobot Komponen Lain-Lain Praktek : {bobot.LainPraktek ? bobot.LainPraktek : '0'}%
           </h10>
           <br></br>
-          {avg.LainPraktek_avg === 0 ? (
+          {avg.LainPraktek_avg === 1 ? (
             <Table
               scroll={{ x: 'max-content' }}
               columns={columns6_avg}

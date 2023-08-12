@@ -4,6 +4,7 @@ import 'src/scss/_custom.scss'
 import { Tabs } from 'antd'
 import IdentitasMataKuliah from './identitasMataKuliah'
 import PembobotanMataKuliah from './pembobotanNilaiMataKuliah'
+import PembobotanMataKuliahV2 from './pembobotanNilaiMataKuliahV2'
 
 const { TabPane } = Tabs
 
@@ -26,7 +27,8 @@ const DetailMataKuliah = () => {
           <IdentitasMataKuliah refreshComponent={() => refreshComponent('Detail')} />
         </TabPane>
         <TabPane tab="Komponen Nilai" key="1">
-          <PembobotanMataKuliah refreshComponent={() => refreshComponent('Komponen Nilai')} />
+          {/* <PembobotanMataKuliah refreshComponent={() => refreshComponent('Komponen Nilai')} /> */}
+          <PembobotanMataKuliahV2 />
         </TabPane>
       </Tabs>
     </>

@@ -122,6 +122,11 @@ const NilaiIndustri = lazyWithRetry(() => import('./views/nilaiindustri/nilaiInd
 //Test Kafka
 const Kafka = lazyWithRetry(() => import('./views/kafka/ListKafka'))
 
+const KelolaAspekEtproTeori = lazyWithRetry(() => import('./views/etikaprofesiteori/kelolaAspek'))
+const KelolaPenilaianEtproTeori = lazyWithRetry(()=> import('./views/etikaprofesiteori/KelolaNilaiEtpro'))
+const FormPenilaianEtpro = lazyWithRetry(()=> import('./views/etikaprofesiteori/FormPenilaianEtpro'))
+const RecapitulationEtpro = lazyWithRetry(() => import('./views/etikaprofesiteori/RecapitulationEtpro'))
+
 const routes = [
   // Page
   { path: '/', exact: true, name: 'Beranda' },
@@ -192,7 +197,22 @@ const routes = [
   { path: '/nilaiIndustri/:id', name: ':id', component: NilaiIndustri},
 
   // *************** Kafka ***************
-  { path: '/kafka', name: 'Test Kafka', component: Kafka, exact: true },
+  // { path: '/kafka', name: 'Test Kafka', component: Kafka, exact: true },
+
+  // *************** Etpro ***************
+  {path: '/etikaProfesiTeori', name: 'Aspek Penilaian EtPro Teori', component: KelolaAspekEtproTeori, exact: true},
+  {path: '/etikaProfesiTeori/aspects', name: 'Kelola Aspek Penilaian EtPro Teori', component: KelolaAspekEtproTeori},
+  {path: '/etikaProfesiTeori/penilaian', name: 'Kelola Penilaian EtPro Teori', component: KelolaPenilaianEtproTeori, exact:true},
+  {
+    path: '/etikaProfesiTeori/form/:id',
+    name: ':id',
+    component:FormPenilaianEtpro,
+  },
+  {
+    path: '/etikaProfesiTeori/recapitulation',
+    name: 'Recapitulation Etpro',
+    component: RecapitulationEtpro
+  },
 
   // Pemetaan
   { path: '/hasilPemetaan', name: 'Hasil Pemetaan', component: HasilPemetaan, exact: true },

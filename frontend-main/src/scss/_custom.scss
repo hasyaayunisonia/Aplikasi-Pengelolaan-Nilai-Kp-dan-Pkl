@@ -208,3 +208,29 @@ input::-webkit-inner-spin-button {
 .my-table tbody tr:nth-child(even) {
   background-color: #ffffff;
 }
+
+.ant-btn-dashed {
+  // background-color: #1890ff; // Warna latar belakang seperti type primary
+  color: #1890ff; // Warna teks menjadi putih untuk kontras
+  border-color: 5px dashed #1890ff; // Warna border menjadi sama seperti latar belakang
+
+  &:hover {
+    background-color: #40a9ff;
+    color: #fff; // Warna latar belakang berubah saat di-hover
+    border-color: #fff; // Warna border berubah saat di-hover
+  }
+}
+
+.green-button {
+  background-color: #16a044;
+  border-color: #16a044;
+  color: #fff;
+  transition: background-color 0.3s ease;
+
+  /* Gaya saat tombol dalam keadaan hover */
+  &:hover {
+    background-color: #4da46a;
+    color: #fff;
+    border-color: #4da46a;
+  }
+}

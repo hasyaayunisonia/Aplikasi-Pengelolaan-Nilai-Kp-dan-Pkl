@@ -20,8 +20,73 @@ import {
   faPersonChalkboard,
   faIndustry,
   faFileLines,
+  faPeopleArrows,
 } from '@fortawesome/free-solid-svg-icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+
+const navigation = {
+  component: CNavGroup,
+  name: 'Etika Profesi',
+  to: '/etikaProfesiTeori/aspects',
+  role: '0',
+  id_prodi: '0',
+  index: 22,
+  icon: <FontAwesomeIcon icon={faPeopleArrows} size="lg" />,
+  items: [
+    {
+      component: CNavItem,
+      index: 22.1,
+      name: 'Kelola Kriteria',
+      to: '/etikaProfesiTeori/aspects',
+    },
+    {
+      component: CNavItem,
+      index: 22.2,
+      name: 'Penilaian Etika Profesi',
+      to: '/etikaProfesiTeori/penilaian',
+    },
+    {
+      component: CNavItem,
+      index: 22.3,
+      name: 'Rekap Nilai Etika Profesi',
+      to: '/etikaProfesiTeori/recapitulation',
+    },
+  ],
+}
+
+const navigationKaprodi = {
+  component: CNavGroup,
+  name: 'Etika Profesi',
+  to: '/etikaProfesiTeori/aspects',
+  role: '3',
+  id_prodi: '0',
+  index: 22,
+  icon: <FontAwesomeIcon icon={faPeopleArrows} size="lg" />,
+  items: [
+    {
+      component: CNavItem,
+      index: 22.1,
+      name: 'Kelola Kriteria',
+      to: '/etikaProfesiTeori/aspects',
+    },
+    {
+      component: CNavItem,
+      index: 22.2,
+      name: 'Penilaian Etika Profesi',
+      to: '/etikaProfesiTeori/penilaian',
+    },
+    {
+      component: CNavItem,
+      index: 22.3,
+      name: 'Rekap Nilai Etika Profesi',
+      to: '/etikaProfesiTeori/recapitulation',
+    },
+  ],
+}
+const idProdi = localStorage.getItem('id_prodi')
+console.log('id_prodi:', idProdi)
+const filteredNav = idProdi === '0' ? [navigation] : []
+const filteredNavKaprodi = idProdi === '0' ? [navigationKaprodi] : []
 
 const _nav = [
   // ================= PANITIA ===============================
@@ -145,6 +210,36 @@ const _nav = [
     //   },
     // ],
   },
+  ...filteredNav,
+  // {
+  //   component: CNavGroup,
+  //   name: 'Etika Profesi',
+  //   to: '/etikaProfesiTeori/aspects',
+  //   role: '0',
+  //   id_prodi: '0',
+  //   index: 23,
+  //   icon: <FontAwesomeIcon icon={faPeopleArrows} size="lg" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       index: 23.1,
+  //       name: 'Kelola Kriteria',
+  //       to: '/etikaProfesiTeori/aspects',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       index: 23.2,
+  //       name: 'Penilaian Etika Profesi',
+  //       to: '/etikaProfesiTeori/penilaian',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       index: 23.3,
+  //       name: 'Rekap Nilai Etika Profesi',
+  //       to: '/etikaProfesiTeori/recapitulation',
+  //     },
+  //   ],
+  // },
   {
     component: CNavTitle,
     name: 'Data Mahasiswa',
@@ -495,6 +590,36 @@ const _nav = [
       },
     ],
   },
+  ...filteredNavKaprodi,
+  // {
+  //   component: CNavGroup,
+  //   name: 'Etika Profesi',
+  //   to: '/etikaProfesiTeori/aspects',
+  //   role: '3',
+  //   id_prodi: '0',
+  //   index: 22,
+  //   icon: <FontAwesomeIcon icon={faPeopleArrows} size="lg" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       index: 22.1,
+  //       name: 'Kelola Kriteria',
+  //       to: '/etikaProfesiTeori/aspects',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       index: 22.2,
+  //       name: 'Penilaian Etika Profesi',
+  //       to: '/etikaProfesiTeori/penilaian',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       index: 22.3,
+  //       name: 'Rekap Nilai Etika Profesi',
+  //       to: '/etikaProfesiTeori/recapitulation',
+  //     },
+  //   ],
+  // },
   {
     component: CNavTitle,
     name: 'Data Mahasiswa',
